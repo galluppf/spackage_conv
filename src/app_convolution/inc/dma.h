@@ -14,7 +14,7 @@ typedef struct
     uint core_id;
     uint core_mask;
     synaptic_row_t *synaptic_block;
-    uint branch_right;
+    uint displacement;
     uint row_size;         //synaptic weight row length
 } synapse_lookup_t;
 
