@@ -192,8 +192,8 @@ VALUES (
 """)
 
 insert_neural_model_query = Template("""
-INSERT INTO cell_types (name, image_name, max_nuro_per_fasc)
-VALUES ('$name', '$image_name', $max_nuro_per_fasc);
+INSERT INTO cell_types (name, image_name, max_nuro_per_fasc, generate_sdram_connectivity)
+VALUES ('$name', '$image_name', $max_nuro_per_fasc, $generate_sdram_connectivity);
 """)
 
 insert_synapse_query = Template("""INSERT INTO 

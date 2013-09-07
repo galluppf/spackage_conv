@@ -54,7 +54,9 @@ class NeuralModel():
     :param image_name: (str) the name of the associated aplx image
 
     """    
-    def __init__(self, model_name=None, default_neurons_per_core=None, image_name=None):
+    def __init__(self, model_name=None, default_neurons_per_core=None, \
+        image_name=None, generate_sdram_connectivity=True):
+        
         self.model_name = model_name
         self.default_neurons_per_core = default_neurons_per_core
         self.image_name = image_name
@@ -64,8 +66,9 @@ class NeuralModel():
         self.num_parameters = 0
         self.parameters = list()
         self.synapses = dict()
+        self.generate_sdram_connectivity = 1
         
-    def add_parameter(self, param_name, param_type, translation, default=0):
+    def add_parameter(self, param_name, param_type, translation, default=0, translate=True):
         """
         Function used to add a parameter to a neural model. Requires the translations
         string for each parameter.
@@ -89,7 +92,7 @@ translation = "int(params['tau_m'][i]/params['cm'][i]*65536)")
         
         """
     
-        self.num_parameters += 1
+        if translate:   self.num_parameters += 1
         neural_parameter = {
             'param_name'    : param_name,
             'param_type'    : param_type,
@@ -237,7 +240,8 @@ translation = "int(params['tau_m'][i]/params['cm'][i]*65536)")
                 param_type = p['param_type'],
                 param_translation = p['translation'],
                 param_position = p['position'],
-                model_name = self.model_name
+                model_name = self.model_name,
+                generate_sdram_connectivity = self.generate_sdram_connectivity
                 )
         return sql_out
         
@@ -255,7 +259,8 @@ translation = "int(params['tau_m'][i]/params['cm'][i]*65536)")
         out_sql_script += model_templates.insert_neural_model_query.substitute( \
             name = self.model_name,
             max_nuro_per_fasc = self.default_neurons_per_core,
-            image_name = self.image_name)
+            image_name = self.image_name,
+            generate_sdram_connectivity = self.generate_sdram_connectivity)
             
         out_sql_script += "\n-- Neural parameters in cell_parameters:"        
         out_sql_script += self.write_sql_neural_parameters()
@@ -341,20 +346,21 @@ class SynapseModel():
         for p in ('delay', 'id', 'weight', 'stdp_on', 'type'):        
             try:
                 param = self.parameters[p]
-                param['shift'] = shift
-                if DEBUG:   print p, "[%d, %d, %s, %d]" % ( param['offset'],
-                                                param['scale'],
-                                                param['mask'],
-                                                param['shift'])
-                
-                self.translations.append([ param['offset'],
-                                                param['scale'],
-                                                param['mask'],
-                                                param['shift']])
             except (KeyError):
-                self.translations.append([ 0, 0, 0, 0])
-                    
-                                            
+                self.add_parameter(p, 0, 0, 0)
+                param = self.parameters[p]
+
+            param['shift'] = shift
+            if DEBUG:   print p, "[%d, %d, %s, %d]" % ( param['offset'],
+                                            param['scale'],
+                                            param['mask'],
+                                            param['shift'])
+            
+            self.translations.append([ param['offset'],
+                                            param['scale'],
+                                            param['mask'],
+                                            param['shift']])
+                                                              
             shift += param['number_of_decimal_bits'] + param['number_of_integer_bits']
         
     
@@ -363,16 +369,16 @@ class SynapseModel():
         return model_templates.decode_synaptic_word.substitute( \
                 stdp_on_shift = self.parameters['stdp_on']['shift'],
                 stdp_on_scale = self.parameters['stdp_on']['scale'],
-                stdp_on_mask = self.parameters['stdp_on']['mask'],
+                stdp_on_mask = hex(self.parameters['stdp_on']['mask']),
                 weight_shift = self.parameters['weight']['shift'],
                 weight_scale = self.parameters['weight']['number_of_decimal_bits'],
-                weight_mask = self.parameters['weight']['mask'],                
+                weight_mask = hex(self.parameters['weight']['mask']),
                 id_shift = self.parameters['id']['shift'],
-                id_mask = self.parameters['id']['mask'],
+                id_mask = hex(self.parameters['id']['mask']),
                 type_shift = self.parameters['type']['shift'],
-                type_mask = self.parameters['type']['mask'],
+                type_mask = hex(self.parameters['type']['mask']),
                 delay_shift = self.parameters['delay']['shift'],
-                delay_mask = self.parameters['delay']['mask'],
+                delay_mask = hex(self.parameters['delay']['mask']),
                 delay_offset = -self.parameters['delay']['offset']                                
                 )
                 
