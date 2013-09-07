@@ -136,7 +136,7 @@ def compute_sdram_block(c, db):
                                         l['r_key'],         #   fasc addr
                                         l['mask'],          #   mask
                                         l['memory_pointer'], 
-                                        0,                  #   linear search
+                                        parameters['displacement_x'] << 16 | parameters['displacement_y'], #   hijack displacement
                                         l['synaptic_row_length']
                                         ))
 
