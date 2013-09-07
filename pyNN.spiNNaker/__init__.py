@@ -672,6 +672,10 @@ class Projection():
         if isinstance(self.method, connectors.FixedProbabilityConnector):   
             assert self.method.p_connect > 0 and self.method.p_connect <= 1, "p_connect needs to be betwqeen 0 and 1, instead is %d" % self.method.p_connect
             self.parameters['p_connect'] = self.method.p_connect
+            
+        if isinstance(self.method, connectors.ConvolutionConnector):   
+            self.parameters['displacement_x'] = self.method.displacement_x
+            self.parameters['displacement_y'] = self.method.displacement_y
         
         # checking if a rng has been passed. if so i will be parsed as an entry 'rng':'rng_id' into the parameters
         if self.rng != None:

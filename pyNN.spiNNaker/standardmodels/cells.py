@@ -166,15 +166,13 @@ class ProxyNeuron(cells.IF_curr_exp):
         pass
 
 
+
 class convolution(cells.IF_curr_exp): 
     __name__ = "convolution" 
-    cell_params = ['v', 'v_thresh', 'v_reset', 'v_rest', 'tau_refrac', 'tau_refrac_clock', 'tau_m']
+    cell_params = ['v', 'time_last_input_spike', 'time_last_output_spike', 'tau_m', 'v_thresh', 'v_reset', 'v_rest', 'tau_refrac', 'size_map_x', 'size_map_y']
     synapses  =   {'excitatory': 0, 'inhibitory': 1}
-    default_parameters = {'tau_refrac': 0, 'tau_m': 16, 'v_thresh': -45, 'v_rest': -65, 'v': -65, 'tau_refrac_clock': 0, 'v_reset': -65}
+    default_parameters = {'tau_refrac': 0, 'size_map_y': 0, 'tau_m': 16, 'time_last_input_spike': 0, 'v_thresh': -60.0, 'v_reset': -60.0, 'v': -60.0, 'size_map_x': 0, 'time_last_output_spike': 0, 'v_rest': -60.0}
 
     def __init__(self): 
         self.__name__ = __name__ 
-
-
-
 

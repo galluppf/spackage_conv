@@ -159,10 +159,34 @@ def compute_neural_structures(db, processor_id):
         
         #if DEBUG:   for t in translations: print t['param_name'], t['translation']
 
+    if True:
+        if DEBUG:   print "\n---parameters per population ---"
+        for parameter_translation in translations:  # starts cycling parameters translations            
+            if parameter_translation['translate'] == 2:
+    #               horrible hack for parameters with the same name # FIXME to be deprecated
+                value = params[parameter_translation['param_name']][i]                  # value is the value of the correspondent param_name
+    #               end of horrible hack
+                try:
+                    translated_parameter = eval(parameter_translation['translation'])      # evaluate the expression            
+                    if DEBUG:   print "n:", i, parameter_translation['param_name'], ", value ", params[parameter_translation['param_name']][i], "is translated with", parameter_translation['translation'], "as ", translated_parameter, "and will be packed as <%s" % parameter_translation['type']                    
+                    out_file_content += struct.pack("<%s" % str(parameter_translation['type']), translated_parameter)
+                except KeyError:
+                        print "error while evaluating parameter", parameter_translation['param_name'], "for neuron", i, "in part population", p['id']
+                        quit(1)
+                    
+                except struct.error:
+                        print "\n\n !!! WARNING !!!  while evaluating parameter\n\n", parameter_translation['param_name'], "for neuron", i, "in part population", p['id'], 'value', value
+                        if translated_parameter<0: translated_parameter = -(pow(2,32)-1)/2
+                        else:                            translated_parameter = (pow(2,32)-1)/2
+                        out_file_content += struct.pack("<%s" % str(parameter_translation['type']), translated_parameter)                            
+                        continue
+
+
+        if DEBUG:   print "\n---parameters per neuron ---"
         # starts cycling neurons
         for i in range(p['size']):      # starts cycling neurons in the population
             for parameter_translation in translations:  # starts cycling parameters translations            
-                if parameter_translation['translate']:
+                if parameter_translation['translate'] == 1:
     #               horrible hack for parameters with the same name # FIXME to be deprecated
                     value = params[parameter_translation['param_name']][i]                  # value is the value of the correspondent param_name
     #               end of horrible hack
@@ -193,11 +217,13 @@ def get_app_metadata(db, part_population):
     By default app_data has 2 reserved words to be initialised to 0 (reserved2 and reserved3)
     """
     neuron_type = db.get_cell_name_by_id(part_population['method_type'])
+
     
     if neuron_type[0]['name'] == 'convolution':
         return [part_population['offset'], int(math.sqrt(part_population['population_size'])) ] 
     else:
         return []
+
     
 
 if __name__ == '__main__':
