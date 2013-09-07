@@ -1,0 +1,666 @@
+SpiNNaker:0,0,1 <		[api_debug] leadAp: 0 mon: 2
+>
+SpiNNaker:0,0,10 <Hello, World!
+>
+SpiNNaker:0,0,11 <Hello, World!
+>
+SpiNNaker:0,0,17 <Hello, World!
+>
+SpiNNaker:0,0,1 <Hello, World!
+>
+SpiNNaker:0,0,2 <Hello, World!
+>
+SpiNNaker:0,0,3 <Hello, World!
+>
+SpiNNaker:0,0,5 <Hello, World!
+>
+SpiNNaker:0,0,7 <Hello, World!
+>
+SpiNNaker:0,0,8 <Hello, World!
+>
+SpiNNaker:0,0,9 <Loading spikes from: 76400000
+>
+SpiNNaker:0,0,10 <Booting application...
+>
+SpiNNaker:0,0,17 <Booting app_dump...
+>
+SpiNNaker:0,0,1 <Booting application...
+>
+SpiNNaker:0,0,2 <Booting application...
+>
+SpiNNaker:0,0,3 <Booting application...
+>
+SpiNNaker:0,0,7 <Booting application...
+>
+SpiNNaker:0,0,8 <Booting application...
+>
+SpiNNaker:0,0,9 <Application booted!
+>
+SpiNNaker:0,0,10 <Loading spikes from: 76600000
+>
+SpiNNaker:0,0,17 <app_dump booted!
+>
+SpiNNaker:0,0,1 <		[api_debug] Number of cores: 12
+>
+SpiNNaker:0,0,9 <Starting simulation...
+>
+SpiNNaker:0,0,10 <Application booted!
+>
+SpiNNaker:0,0,11 <app_data.synaptic_row_length: 1, row size: 16 bytes
+>
+SpiNNaker:0,0,17 <Starting app_dump...
+>
+SpiNNaker:0,0,1 <		[api_debug] bside: 8, bsize: 3
+>
+SpiNNaker:0,0,10 <Starting simulation...
+>
+SpiNNaker:0,0,1 <		[api_debug] chip: 0, core map: 0x20ffe
+>
+SpiNNaker:0,0,1 <		[api_debug] RDYGO: k 0x0ffff801 m 0xffffffff r 0x00000000
+>
+SpiNNaker:0,0,1 <		[api_debug] RDY2: k 0x0ffff803 m 0xffffffff r 0x00000040
+>
+SpiNNaker:0,0,1 <		[api_debug] GO: k 0x0ffff800 m 0xffffffff r 0x0083fec0
+>
+SpiNNaker:0,0,6 <app_data.synaptic_row_length: 20, row size: 92 bytes
+>
+SpiNNaker:0,0,4 <app_data.synaptic_row_length: 20, row size: 92 bytes
+>
+SpiNNaker:0,0,6 <key 0xfffffffc size 20 pointer 0x70000180
+>
+SpiNNaker:0,0,4 <key 0xfffffffc size 20 pointer 0x700002c0
+>
+SpiNNaker:0,0,6 <key 0xfffffffc size 20 pointer 0x40d524
+>
+SpiNNaker:0,0,4 <key 0xfffffffc size 20 pointer 0x40d524
+>
+SpiNNaker:0,0,5 <app_data.synaptic_row_length: 20, row size: 92 bytes
+>
+SpiNNaker:0,0,6 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,4 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,5 <key 0xfffffffc size 20 pointer 0x70000220
+>
+SpiNNaker:0,0,6 <key 0xfffffffc size 20 pointer 0x700001d0
+>
+SpiNNaker:0,0,2 <app_data.synaptic_row_length: 20, row size: 92 bytes
+>
+SpiNNaker:0,0,3 <app_data.synaptic_row_length: 20, row size: 92 bytes
+>
+SpiNNaker:0,0,4 <key 0xfffffffc size 20 pointer 0x70000310
+>
+SpiNNaker:0,0,5 <key 0xfffffffc size 20 pointer 0x40d524
+>
+SpiNNaker:0,0,6 <key 0xfffffffc size 20 pointer 0x40d574
+>
+SpiNNaker:0,0,7 <app_data.synaptic_row_length: 20, row size: 92 bytes
+>
+SpiNNaker:0,0,8 <app_data.synaptic_row_length: 20, row size: 92 bytes
+>
+SpiNNaker:0,0,2 <key 0xfffffffc size 20 pointer 0x70000400
+>
+SpiNNaker:0,0,3 <key 0xfffffffc size 20 pointer 0x70000360
+>
+SpiNNaker:0,0,4 <key 0xfffffffc size 20 pointer 0x40d574
+>
+SpiNNaker:0,0,5 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,6 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,7 <key 0xfffffffc size 20 pointer 0x700000e0
+>
+SpiNNaker:0,0,8 <key 0xfffffffc size 20 pointer 0x70000040
+>
+SpiNNaker:0,0,1 <		[api_debug] MC entry 24: k 0x00004800 m 0xfffffffc r 0x00027ec0
+>
+SpiNNaker:0,0,2 <key 0xfffffffc size 20 pointer 0x40d524
+>
+SpiNNaker:0,0,3 <key 0xfffffffc size 20 pointer 0x40d524
+>
+SpiNNaker:0,0,4 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,5 <key 0xfffffffc size 20 pointer 0x70000270
+>
+SpiNNaker:0,0,6 <Application booted!
+>
+SpiNNaker:0,0,7 <key 0xfffffffc size 20 pointer 0x40d524
+>
+SpiNNaker:0,0,8 <key 0xfffffffc size 20 pointer 0x40d524
+>
+SpiNNaker:0,0,1 <		[api_debug] MC entry 25: k 0x00005000 m 0xfffffffc r 0x00007ec0
+>
+SpiNNaker:0,0,2 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,3 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,4 <Application booted!
+>
+SpiNNaker:0,0,5 <key 0xfffffffc size 20 pointer 0x40d574
+>
+SpiNNaker:0,0,6 <Starting simulation...
+>
+SpiNNaker:0,0,7 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,8 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,1 <app_data.synaptic_row_length: 20, row size: 92 bytes
+>
+SpiNNaker:0,0,2 <key 0xfffffffc size 20 pointer 0x70000450
+>
+SpiNNaker:0,0,3 <key 0xfffffffc size 20 pointer 0x700003b0
+>
+SpiNNaker:0,0,4 <Starting simulation...
+>
+SpiNNaker:0,0,5 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,7 <key 0xfffffffc size 20 pointer 0x70000130
+>
+SpiNNaker:0,0,8 <key 0xfffffffc size 20 pointer 0x70000090
+>
+SpiNNaker:0,0,1 <key 0xfffffffc size 20 pointer 0x700004a0
+>
+SpiNNaker:0,0,2 <key 0xfffffffc size 20 pointer 0x40d574
+>
+SpiNNaker:0,0,3 <key 0xfffffffc size 20 pointer 0x40d574
+>
+SpiNNaker:0,0,5 <Application booted!
+>
+SpiNNaker:0,0,7 <key 0xfffffffc size 20 pointer 0x40d574
+>
+SpiNNaker:0,0,8 <key 0xfffffffc size 20 pointer 0x40d574
+>
+SpiNNaker:0,0,1 <key 0xfffffffc size 20 pointer 0x40d524
+>
+SpiNNaker:0,0,2 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,3 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,5 <Starting simulation...
+>
+SpiNNaker:0,0,7 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,8 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,1 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,2 <Application booted!
+>
+SpiNNaker:0,0,3 <Application booted!
+>
+SpiNNaker:0,0,7 <Application booted!
+>
+SpiNNaker:0,0,8 <Application booted!
+>
+SpiNNaker:0,0,1 <key 0xfffffffc size 20 pointer 0x700004f0
+>
+SpiNNaker:0,0,2 <Starting simulation...
+>
+SpiNNaker:0,0,3 <Starting simulation...
+>
+SpiNNaker:0,0,7 <Starting simulation...
+>
+SpiNNaker:0,0,8 <Starting simulation...
+>
+SpiNNaker:0,0,1 <key 0xfffffffc size 20 pointer 0x40d574
+>
+SpiNNaker:0,0,1 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,1 <Application booted!
+>
+SpiNNaker:0,0,1 <Starting simulation...
+>
+SpiNNaker:0,0,11 <Application booted!
+>
+SpiNNaker:0,0,11 <Starting simulation...
+>
+SpiNNaker:0,0,1 <
+>
+SpiNNaker:0,0,2 <
+>
+SpiNNaker:0,0,3 <
+>
+SpiNNaker:0,0,4 <
+>
+SpiNNaker:0,0,5 <
+>
+SpiNNaker:0,0,6 <
+>
+SpiNNaker:0,0,7 <
+>
+SpiNNaker:0,0,8 <
+>
+SpiNNaker:0,0,1 <n;v;v_thresh;v_reset;v_rest;tau_refrac;tau_refrac_clock;tau_m
+>
+SpiNNaker:0,0,2 <n;v;v_thresh;v_reset;v_rest;tau_refrac;tau_refrac_clock;tau_m
+>
+SpiNNaker:0,0,3 <n;v;v_thresh;v_reset;v_rest;tau_refrac;tau_refrac_clock;tau_m
+>
+SpiNNaker:0,0,4 <n;v;v_thresh;v_reset;v_rest;tau_refrac;tau_refrac_clock;tau_m
+>
+SpiNNaker:0,0,5 <n;v;v_thresh;v_reset;v_rest;tau_refrac;tau_refrac_clock;tau_m
+>
+SpiNNaker:0,0,6 <n;v;v_thresh;v_reset;v_rest;tau_refrac;tau_refrac_clock;tau_m
+>
+SpiNNaker:0,0,7 <n;v;v_thresh;v_reset;v_rest;tau_refrac;tau_refrac_clock;tau_m
+>
+SpiNNaker:0,0,8 <n;v;v_thresh;v_reset;v_rest;tau_refrac;tau_refrac_clock;tau_m
+>
+SpiNNaker:0,0,1 <0;-16640;-13056;-17920;-16640;3;0;4096
+>
+SpiNNaker:0,0,2 <0;-16640;-13056;-17920;-16640;3;0;4096
+>
+SpiNNaker:0,0,3 <0;-16640;-13056;-17920;-16640;3;0;4096
+>
+SpiNNaker:0,0,4 <0;-16640;-13056;-17920;-16640;3;0;4096
+>
+SpiNNaker:0,0,5 <0;-16640;-13056;-17920;-16640;3;0;4096
+>
+SpiNNaker:0,0,6 <0;-16640;-13056;-17920;-16640;3;0;4096
+>
+SpiNNaker:0,0,7 <0;-16640;-13056;-17920;-16640;3;0;4096
+>
+SpiNNaker:0,0,8 <0;-16640;-13056;-17920;-16640;3;0;4096
+>
+SpiNNaker:0,0,1 <start_id: 0, end_id: 2048, total_neurons: 128
+>
+SpiNNaker:0,0,2 <start_id: 2048, end_id: 4096, total_neurons: 128
+>
+SpiNNaker:0,0,3 <start_id: 4096, end_id: 6144, total_neurons: 128
+>
+SpiNNaker:0,0,4 <start_id: 6144, end_id: 8192, total_neurons: 128
+>
+SpiNNaker:0,0,5 <start_id: 8192, end_id: 10240, total_neurons: 128
+>
+SpiNNaker:0,0,6 <start_id: 10240, end_id: 12288, total_neurons: 128
+>
+SpiNNaker:0,0,7 <start_id: 12288, end_id: 14336, total_neurons: 128
+>
+SpiNNaker:0,0,8 <start_id: 14336, end_id: 16384, total_neurons: 128
+>
+SpiNNaker:0,0,10 <Spike source model
+>
+SpiNNaker:0,0,9 <Spike source model
+>
+SpiNNaker:0,0,4 <Time: 50 key: 0x4800
+>
+SpiNNaker:0,0,5 <Time: 50 key: 0x4800
+>
+SpiNNaker:0,0,6 <Time: 50 key: 0x4800
+>
+SpiNNaker:0,0,7 <Time: 50 key: 0x4800
+>
+SpiNNaker:0,0,8 <Time: 50 key: 0x4800
+>
+SpiNNaker:0,0,1 <Time: 50 key: 0x4800
+>
+SpiNNaker:0,0,2 <Time: 50 key: 0x4800
+>
+SpiNNaker:0,0,3 <Time: 50 key: 0x4800
+>
+SpiNNaker:0,0,4 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,5 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,6 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,7 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,8 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,1 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,2 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,3 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,4 <Time: 60 key: 0x4801
+>
+SpiNNaker:0,0,5 <Time: 60 key: 0x4801
+>
+SpiNNaker:0,0,6 <Time: 60 key: 0x4801
+>
+SpiNNaker:0,0,7 <Time: 60 key: 0x4801
+>
+SpiNNaker:0,0,8 <Time: 60 key: 0x4801
+>
+SpiNNaker:0,0,1 <Time: 60 key: 0x4801
+>
+SpiNNaker:0,0,2 <Time: 60 key: 0x4801
+>
+SpiNNaker:0,0,3 <Time: 60 key: 0x4801
+>
+SpiNNaker:0,0,4 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,5 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,6 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,7 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,8 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,1 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,2 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,3 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,4 <Time: 61 key: 0x4803
+>
+SpiNNaker:0,0,5 <Time: 61 key: 0x4803
+>
+SpiNNaker:0,0,6 <Time: 61 key: 0x4803
+>
+SpiNNaker:0,0,7 <Time: 61 key: 0x4803
+>
+SpiNNaker:0,0,8 <Time: 61 key: 0x4803
+>
+SpiNNaker:0,0,1 <Time: 61 key: 0x4803
+>
+SpiNNaker:0,0,2 <Time: 61 key: 0x4803
+>
+SpiNNaker:0,0,3 <Time: 61 key: 0x4803
+>
+SpiNNaker:0,0,4 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,5 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,6 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,7 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,8 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,1 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,2 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,3 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,4 <Time: 100 key: 0x4800
+>
+SpiNNaker:0,0,5 <Time: 100 key: 0x4800
+>
+SpiNNaker:0,0,6 <Time: 100 key: 0x4800
+>
+SpiNNaker:0,0,7 <Time: 100 key: 0x4800
+>
+SpiNNaker:0,0,8 <Time: 100 key: 0x4800
+>
+SpiNNaker:0,0,1 <Time: 100 key: 0x4800
+>
+SpiNNaker:0,0,2 <Time: 100 key: 0x4800
+>
+SpiNNaker:0,0,3 <Time: 100 key: 0x4800
+>
+SpiNNaker:0,0,4 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,5 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,6 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,7 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,8 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,1 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,2 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,3 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,4 <Time: 110 key: 0x4801
+>
+SpiNNaker:0,0,5 <Time: 110 key: 0x4801
+>
+SpiNNaker:0,0,6 <Time: 110 key: 0x4801
+>
+SpiNNaker:0,0,7 <Time: 110 key: 0x4801
+>
+SpiNNaker:0,0,8 <Time: 110 key: 0x4801
+>
+SpiNNaker:0,0,1 <Time: 110 key: 0x4801
+>
+SpiNNaker:0,0,2 <Time: 110 key: 0x4801
+>
+SpiNNaker:0,0,3 <Time: 110 key: 0x4801
+>
+SpiNNaker:0,0,4 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,5 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,6 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,7 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,8 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,1 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,2 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,3 <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+>
+SpiNNaker:0,0,4 <Time: 150 key: 0x5000
+>
+SpiNNaker:0,0,5 <Time: 150 key: 0x5000
+>
+SpiNNaker:0,0,6 <Time: 150 key: 0x5000
+>
+SpiNNaker:0,0,7 <Time: 150 key: 0x5000
+>
+SpiNNaker:0,0,8 <Time: 150 key: 0x5000
+>
+SpiNNaker:0,0,1 <Time: 150 key: 0x5000
+>
+SpiNNaker:0,0,2 <Time: 150 key: 0x5000
+>
+SpiNNaker:0,0,3 <Time: 150 key: 0x5000
+>
+SpiNNaker:0,0,4 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,5 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,6 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,7 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,8 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,1 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,2 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,3 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,4 <Time: 160 key: 0x5001
+>
+SpiNNaker:0,0,5 <Time: 160 key: 0x5001
+>
+SpiNNaker:0,0,6 <Time: 160 key: 0x5001
+>
+SpiNNaker:0,0,7 <Time: 160 key: 0x5001
+>
+SpiNNaker:0,0,8 <Time: 160 key: 0x5001
+>
+SpiNNaker:0,0,1 <Time: 160 key: 0x5001
+>
+SpiNNaker:0,0,2 <Time: 160 key: 0x5001
+>
+SpiNNaker:0,0,3 <Time: 160 key: 0x5001
+>
+SpiNNaker:0,0,4 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,5 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,6 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,7 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,8 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,1 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,2 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,3 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,4 <Time: 170 key: 0x5002
+>
+SpiNNaker:0,0,5 <Time: 170 key: 0x5002
+>
+SpiNNaker:0,0,6 <Time: 170 key: 0x5002
+>
+SpiNNaker:0,0,7 <Time: 170 key: 0x5002
+>
+SpiNNaker:0,0,8 <Time: 170 key: 0x5002
+>
+SpiNNaker:0,0,1 <Time: 170 key: 0x5002
+>
+SpiNNaker:0,0,2 <Time: 170 key: 0x5002
+>
+SpiNNaker:0,0,3 <Time: 170 key: 0x5002
+>
+SpiNNaker:0,0,4 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,5 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,6 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,7 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,8 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,1 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,2 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,3 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,4 <Time: 175 key: 0x5002
+>
+SpiNNaker:0,0,5 <Time: 175 key: 0x5002
+>
+SpiNNaker:0,0,6 <Time: 175 key: 0x5002
+>
+SpiNNaker:0,0,7 <Time: 175 key: 0x5002
+>
+SpiNNaker:0,0,8 <Time: 175 key: 0x5002
+>
+SpiNNaker:0,0,1 <Time: 175 key: 0x5002
+>
+SpiNNaker:0,0,2 <Time: 175 key: 0x5002
+>
+SpiNNaker:0,0,3 <Time: 175 key: 0x5002
+>
+SpiNNaker:0,0,4 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,5 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,6 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,7 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,8 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,1 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,2 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,3 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,4 <Time: 189 key: 0x5000
+>
+SpiNNaker:0,0,5 <Time: 189 key: 0x5000
+>
+SpiNNaker:0,0,6 <Time: 189 key: 0x5000
+>
+SpiNNaker:0,0,7 <Time: 189 key: 0x5000
+>
+SpiNNaker:0,0,8 <Time: 189 key: 0x5000
+>
+SpiNNaker:0,0,1 <Time: 189 key: 0x5000
+>
+SpiNNaker:0,0,2 <Time: 189 key: 0x5000
+>
+SpiNNaker:0,0,3 <Time: 189 key: 0x5000
+>
+SpiNNaker:0,0,4 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,5 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,6 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,7 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,8 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,1 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,2 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,3 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,4 <Time: 199 key: 0x5001
+>
+SpiNNaker:0,0,5 <Time: 199 key: 0x5001
+>
+SpiNNaker:0,0,6 <Time: 199 key: 0x5001
+>
+SpiNNaker:0,0,7 <Time: 199 key: 0x5001
+>
+SpiNNaker:0,0,8 <Time: 199 key: 0x5001
+>
+SpiNNaker:0,0,1 <Time: 199 key: 0x5001
+>
+SpiNNaker:0,0,2 <Time: 199 key: 0x5001
+>
+SpiNNaker:0,0,3 <Time: 199 key: 0x5001
+>
+SpiNNaker:0,0,4 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,5 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,6 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,7 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,8 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,1 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,2 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,3 <-20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 
+>
+SpiNNaker:0,0,10 <Simulation complete - received 0 sdp packets.
+>
+SpiNNaker:0,0,9 <Simulation complete - received 0 sdp packets.
+>
+SpiNNaker:0,0,17 <Stopping!
+>
+SpiNNaker:0,0,1 <Simulation complete.
+>
+SpiNNaker:0,0,2 <Simulation complete.
+>
+SpiNNaker:0,0,3 <Simulation complete.
+>
+SpiNNaker:0,0,4 <Simulation complete.
+>
+SpiNNaker:0,0,5 <Simulation complete.
+>
+SpiNNaker:0,0,6 <Simulation complete.
+>
+SpiNNaker:0,0,7 <Simulation complete.
+>
+SpiNNaker:0,0,11 <Simulation complete.
+>
+SpiNNaker:0,0,1 <		[api_debug] RTR mc     packets: 23
+>
+SpiNNaker:0,0,1 <		[api_debug] RTR dpd mc packets: 0
+>
+SpiNNaker:0,0,1 <		[api_debug] ISR thrown packets: 0
+>
+SpiNNaker:0,0,1 <		[api_debug] DMA bursts:  0
+>

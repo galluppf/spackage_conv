@@ -1,0 +1,1249 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <string.h>
+#include <pthread.h>
+#include <math.h>
+#include <resolv.h>
+#include <string>
+
+#define INPUT_PORT_SPINNAKER    54321    //port to receive spinnaker packets
+#define OUTPUT_UDP_PORT_BOARD   17893    //port to send stimuli to spinnaker board
+#define SPINNPROTVERSION        0x1      // this is the Spinnaker Protocol Version (1= 1st release (ROM)) !!!
+#define SPINNPROTSUBVERSION     0x0      // for testing
+#define SPINNHEADERLENGTH       18       // this is the SpiNNaker protocol byte overhead, ver(2)+opcode(4)+3options(4)
+#define MAXBLOCKSIZE            64       // max number of words in a block - !! should be 64
+#define STIM_OUT                73       // opcode for the SpiNNaker packet
+#define ACK                     61       // opcode for the ack spinnaker packet
+#define SDP_BUF_SIZE            256      //max size of the SDP data buffer (in bytes)
+#define RESYNC_INTERVAL         1000     //number of packet after which 
+//#define DEBUG
+
+#pragma pack(1)
+
+
+struct spinnpacket
+{
+    unsigned short version;
+    unsigned command;
+    unsigned int option1;
+    unsigned int option2;
+    unsigned int option3;
+    unsigned int neuronIDs;
+};
+
+
+// section for global defs for SpiNN output functions
+struct SpiNNakerPacket {
+    unsigned char subversion;
+    unsigned char version;
+    unsigned int opcode;
+    unsigned int option1;
+    unsigned int option2;
+    unsigned int option3;
+    unsigned int array[MAXBLOCKSIZE];
+};
+
+
+struct sdp_msg		// SDP message (=292 bytes)
+{
+    unsigned char ip_time_out;
+    unsigned char pad;
+
+    // sdp_hdr_t
+
+    unsigned char flags;			// SDP flag byte
+    unsigned char tag;			// SDP IPtag
+    unsigned char dest_port;		// SDP destination port
+    unsigned char srce_port;		// SDP source port
+    unsigned short dest_addr;		// SDP destination address
+    unsigned short srce_addr;		// SDP source address
+
+    // cmd_hdr_t (optional)
+
+    unsigned short int cmd_rc;			// Command/Return Code
+    unsigned short int dummy;            // ???
+    unsigned int arg1;			// Arg 1
+    unsigned int arg2;			// Arg 2
+    unsigned int arg3;			// Arg 3
+
+    // user data (optional)
+
+    unsigned int data[MAXBLOCKSIZE];	// User data (256 bytes)
+};
+
+//struct itimerval tout_val;
+struct itimerspec tout_val;
+struct sigevent evp;
+struct sigaction sig_act;
+sigset_t mask;
+timer_t timerid;
+unsigned int packet_entries_num=0;
+unsigned int packet_num = 0;
+struct sdp_msg *packets=NULL;
+volatile int spike_heard = 0;
+volatile int wait_for_timer = 0;
+volatile int sent_before_end = 0;
+unsigned int time_count = 0;
+FILE *finput, *foutput;
+volatile int terminate = 0;
+volatile int spike_queueing = 0;
+int real_time = 1;
+int ms_tick = 0;
+int binary_input = 2;
+int replicate_output = 0;
+
+
+//buffer for packets received from the SpiNNaker board
+unsigned char buffer_input[1515];
+
+//variables for spinnaker stimuli packet generator
+int sockfd_output_board;
+struct sockaddr_in sin_output_board;
+//end of variables for spinnaker stimuli packet generator
+
+//variables for spinnaker packet receiver
+int sockfd_input;
+char portno_input[6];
+struct addrinfo hints_input, *servinfo_input, *p_input;
+struct sockaddr_storage their_addr_input;
+socklen_t addr_len_input;
+int rv_input;
+int numbytes_input;
+struct sdp_msg * scanptr;
+//end of variables for spinnaker packet receiver
+
+//variables for visualizers
+int visualizer1_on = 0, visualizer2_on = 0;
+int sockfd_visualizer1, sockfd_visualizer2;
+struct sockaddr_in sin_visualizer1, sin_visualizer2;
+
+pthread_mutex_t readmutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t readcond = PTHREAD_COND_INITIALIZER;
+
+pthread_mutex_t new_spike_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t new_spike_cond = PTHREAD_COND_INITIALIZER;
+
+void sig_handler(union sigval sig);
+void timer_signal (int i);
+void init_udp_server_spinnaker();
+void* spinnaker_input_thread (void *ptr);
+void* file_input_thread (void *ptr);
+void* set_timer_thread (void *ptr);
+void user_signal (int sig);
+void print_help(char filename[]);
+
+int main(int argc, char *argv[])
+{
+    pthread_t p1, p2, p3;
+    struct hostent *spinn_board = NULL;
+    char *spinn_board_addr;
+    struct hostent *visualizer1, *visualizer2;
+    char *visualizer1_addr, *visualizer2_addr;
+    char oc;
+
+    finput = stdin;
+    foutput = stdout;    
+    real_time = 1;
+    binary_input = 2;
+
+    if (argc == 1)
+        print_help(argv[0]);
+
+    while ((oc = getopt(argc, argv, "bhi:m:o:rs:tv:w:")) != -1)
+    {
+        int port;
+        char *visualizer_addr;
+        char *ip;
+
+        switch (oc) {
+        case 'b':
+#ifdef DEBUG
+            fprintf (stderr, "identified -b parameter\n");
+#endif
+            binary_input = 1;
+            break;
+
+        case 'i':
+#ifdef DEBUG
+            fprintf (stderr, "identified -i parameter with argument: %s\n", optarg);
+#endif
+            finput = fopen(optarg, "r");
+            real_time = 0;
+#ifdef DEBUG
+            unsigned int a, temp;
+            fseek(finput, 0, SEEK_END);
+            fprintf (stderr, "file size: %ld bytes\n", ftell(finput));
+            fseek(finput, 0, SEEK_SET);
+            a = fread(&temp, sizeof (unsigned int), 1, finput);
+            fprintf (stderr, "file handle: %ld\n", (long) finput);
+            fprintf (stderr, "read %u integers from input file data\n", a);
+            fprintf (stderr, "read %u from input file data\n", temp);
+            fflush (stderr);
+            fseek(finput, 0, SEEK_SET);
+#endif
+            break;
+
+        case 'm':
+#ifdef DEBUG
+            fprintf (stderr, "identified -m parameter with argument: %s\n", optarg);
+#endif
+            ms_tick = atoi(optarg);
+            break;
+
+        case 'o':
+#ifdef DEBUG
+            fprintf (stderr, "identified -o parameter with argument: %s\n", optarg);
+#endif
+            foutput = fopen(optarg, "w");
+            break;
+
+        case 'r':
+#ifdef DEBUG
+            fprintf (stderr, "identified -r parameter\n");
+#endif
+            replicate_output = 1;
+            break;
+
+        case 's':
+#ifdef DEBUG
+            fprintf (stderr, "identified -s parameter with argument: %s\n", optarg);
+#endif
+            fprintf (stderr, "Board hostname: %s\n", optarg);
+            fflush (stderr);
+            if ((spinn_board = gethostbyname(optarg)) == NULL)
+            {
+                fprintf (stderr, "Error during gethostbyname for spinnaker board\n");
+                fflush (stderr);
+                exit(1);
+            }
+            spinn_board_addr = inet_ntoa(*(struct in_addr*)spinn_board->h_addr_list[0]);
+            fprintf (stderr, "Board address: %s\n", spinn_board_addr);
+            fflush (stderr);
+
+
+            if ((sockfd_output_board=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
+                perror ("socket creation error towards spinnaker board");
+
+            bzero(&sin_output_board, sizeof(sin_output_board));
+            sin_output_board.sin_family = AF_INET;
+            sin_output_board.sin_port = htons(OUTPUT_UDP_PORT_BOARD);
+            if (inet_aton(spinn_board_addr, &sin_output_board.sin_addr)==0)
+            {
+                fprintf(stderr, "inet_aton() towards the board failed\n");
+                fflush (stderr);
+                exit(1);
+            }
+            break;
+
+        case 't':
+#ifdef DEBUG
+            fprintf (stderr, "identified -t parameter\n");
+#endif
+            binary_input = 0;
+            break;
+
+        case 'v':
+#ifdef DEBUG
+            fprintf (stderr, "identified -v parameter with argument: %s\n", optarg);
+#endif
+            visualizer1_on = 1;
+
+            visualizer_addr = strtok (optarg, ":");
+            port = atoi (strtok(NULL, ":"));
+            fprintf (stderr, "visualizer 1 address: %s, port: %d\n", visualizer_addr, port);
+            fflush (stderr);
+
+            if ((visualizer1 = gethostbyname(visualizer_addr)) == NULL)
+            {
+                fprintf (stderr, "Error during gethostbyname for visualizer 1\n");
+                fflush (stderr);
+                exit(1);
+            }
+
+            visualizer1_addr = inet_ntoa(*(struct in_addr*)visualizer1->h_addr_list[0]);
+            fprintf (stderr, "Visualizer 1: %s\n", visualizer1_addr);
+            fflush (stderr);
+
+            if ((sockfd_visualizer1 = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
+                perror ("socket creation error towards visualizer 1");
+
+            bzero(&sin_visualizer1, sizeof(sin_visualizer1));
+            //memset((char *) &si_other, 0, sizeof(si_other));
+            sin_visualizer1.sin_family = AF_INET;
+            sin_visualizer1.sin_port = htons(port);
+            if (inet_aton(visualizer1_addr, &sin_visualizer1.sin_addr)==0)
+            {
+                fprintf(stderr, "inet_aton() towards the visualizer 1 failed\n");
+                fflush (stderr);
+                exit(1);
+            }
+
+            break;
+
+        case 'w':
+#ifdef DEBUG
+            fprintf (stderr, "identified -w parameter with argument: %s\n", optarg);
+#endif
+            visualizer2_on = 1;
+
+            visualizer_addr = strtok (optarg, ":");
+            port = atoi (strtok(NULL, ":"));
+            fprintf (stderr, "visualizer 2 address: %s, port: %d\n", visualizer_addr, port);
+            fflush (stderr);
+
+            if ((visualizer2 = gethostbyname(visualizer_addr)) == NULL)
+            {
+                fprintf (stderr, "Error during gethostbyname for visualizer 2\n");
+                fflush (stderr);
+                exit(1);
+            }
+
+            visualizer2_addr = inet_ntoa(*(struct in_addr*)visualizer2->h_addr_list[0]);
+            fprintf (stderr, "Visualizer 2: %s\n", visualizer2_addr);
+            fflush (stderr);
+            //fprintf (stderr, "Visualizer 2: %s\n", inet_ntoa(*(struct in_addr*)visualizer2->h_addr_list[0]));
+
+            ip = inet_ntoa(*(struct in_addr*)visualizer2->h_addr_list[0]);
+            if ((sockfd_visualizer2 = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
+                perror ("socket creation error towards visualizer 2");
+
+            bzero(&sin_visualizer2, sizeof(sin_visualizer2));
+            //memset((char *) &si_other, 0, sizeof(si_other));
+            sin_visualizer2.sin_family = AF_INET;
+            sin_visualizer2.sin_port = htons(port);
+            if (inet_aton(visualizer2_addr, &sin_visualizer2.sin_addr)==0)
+            {
+                fprintf(stderr, "inet_aton() towards the visualizer 2 failed\n");
+                fflush (stderr);
+                exit(1);
+            }
+
+            break;
+
+        case 'h':
+        case ':':
+        case '?':
+        default:
+#ifdef DEBUG
+            fprintf (stderr, "identified -h parameter or following the default path for unknown parameters\n");
+#endif
+            print_help(argv[0]);
+            break;
+        }
+    }
+
+    if (binary_input == 2)
+        print_help(argv[0]);
+
+    if (replicate_output == 1 && foutput == stdout)
+        print_help(argv[0]);
+
+    if (ms_tick == 0)
+        print_help(argv[0]);
+
+    if (spinn_board == NULL)
+        print_help(argv[0]);
+
+    init_udp_server_spinnaker();
+
+#ifdef DEBUG
+    fprintf (stderr, "input/output format: %s\n", (binary_input==0)?"Text":"Binary");
+    fprintf (stderr, "sockfd_visualizer1: %d\n", sockfd_visualizer1);
+    fprintf (stderr, "sockfd_visualizer2: %d\n", sockfd_visualizer2);
+    fprintf (stderr, "sockfd_output_board: %d\n", sockfd_output_board);
+    fflush (stderr);
+#endif
+
+    pthread_mutex_init(&readmutex, NULL);
+    pthread_cond_init(&readcond, NULL);
+
+    pthread_mutex_init(&new_spike_mutex, NULL);
+    pthread_cond_init(&new_spike_cond, NULL);
+
+    //initialization of the millisecond signal generator
+    tout_val.it_interval.tv_sec = tout_val.it_value.tv_sec = (long int) floor((double)ms_tick / (double)1000);
+    tout_val.it_interval.tv_nsec = tout_val.it_value.tv_nsec = 1000000 * (ms_tick % 1000); // set timer for ms_tick millisecond
+
+    pthread_create(&p1, NULL, spinnaker_input_thread, NULL);
+    pthread_create(&p2, NULL, file_input_thread, NULL);
+    pthread_create(&p3, NULL, set_timer_thread, NULL);
+    
+    //read from stdin until EOF
+    //at EOF flush everything, close sockets and shut down the listening thread
+    //while receiving data from stdin put them in a buffer until receiving the bytecode "FFFFFFFF" which means "stop for this millisecond"
+    //at EOF flush everything, close sockets and shut down the listening thread
+
+    pthread_join(p3, NULL);
+    pthread_join(p2, NULL);
+    pthread_kill(p1, SIGUSR1);
+    pthread_join(p1, NULL);
+}
+
+void init_udp_server_spinnaker()
+{
+    snprintf (portno_input, 6, "%d", INPUT_PORT_SPINNAKER);
+
+    bzero(&hints_input, sizeof(hints_input));
+    hints_input.ai_family = AF_INET; // set to AF_INET to force IPv4
+    hints_input.ai_socktype = SOCK_DGRAM;
+    hints_input.ai_flags = AI_PASSIVE; // use my IP
+    hints_input.ai_protocol = 0;
+    hints_input.ai_canonname = NULL;
+    hints_input.ai_addr = INADDR_ANY;
+    hints_input.ai_next = NULL;
+
+    if ((rv_input = getaddrinfo(NULL, portno_input, &hints_input, &servinfo_input)) != 0)
+    {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv_input));
+        fflush (stderr);
+        exit(1);
+    }
+
+    // loop through all the results and bind to the first we can
+    for(p_input = servinfo_input; p_input != NULL; p_input = p_input->ai_next)
+    {
+        if ((sockfd_input = socket(p_input->ai_family, p_input->ai_socktype, p_input->ai_protocol)) == -1)
+        {
+            fprintf(stderr, "listener: socket\n");
+            fflush (stderr);
+            continue;
+        }
+
+        if (bind(sockfd_input, p_input->ai_addr, p_input->ai_addrlen) == -1)
+        {
+            close(sockfd_input);
+            fprintf(stderr, "listener: bind\n");
+            fflush (stderr);
+            continue;
+        }
+
+        break;
+    }
+
+    if (p_input == NULL)
+    {
+        fprintf(stderr, "listener: failed to bind socket\n");
+        fflush (stderr);
+        exit(-1);
+    }
+
+    freeaddrinfo(servinfo_input);
+
+// here ends the UDP listener setup (spinnaker board side)
+
+    fprintf (stderr, "Spinnaker UDP listener setup complete!\n");
+    fflush (stderr);
+}
+
+void* set_timer_thread (void *ptr)
+{
+    int status;
+//TODO
+//    signal(SIGALRM, timer_signal);
+//    setitimer(ITIMER_REAL, &tout_val, NULL);
+
+/*
+    sig_act.sa_handler = sig_handler;
+    sig_act.sa_flags = 0;
+    sigemptyset(&sig_act.sa_mask);
+    if (sigaction(SIGRTMIN, &sig_act, NULL) == -1)
+        perror("sigaction");
+
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGRTMIN);
+    if (sigprocmask(SIG_SETMASK, &mask, NULL) == -1)
+        perror("sigprocmask");
+*/
+
+    evp.sigev_notify = SIGEV_THREAD;
+    evp.sigev_signo = SIGRTMIN;
+    evp.sigev_value.sival_int = SIGRTMIN;
+    evp.sigev_notify_function = sig_handler;
+    evp.sigev_notify_attributes = NULL;
+    
+    status = timer_create(CLOCK_REALTIME, &evp, &timerid);
+    if (status != 0)
+    {
+        perror ("timer_create");
+        exit(status);
+    }
+
+    status = timer_settime(timerid, 0, &tout_val, NULL);
+    if (status != 0)
+    {
+        perror ("timer_settime");
+        exit(status);
+    }
+    
+    fprintf (stderr, "Timer setup complete!\n");
+    fflush (stderr);
+
+    return NULL;
+}
+
+void sig_handler(union sigval sig)
+{
+    if (sig.sival_int == SIGRTMIN)
+        timer_signal(SIGRTMIN);
+
+    return;
+}
+
+void* spinnaker_input_thread (void *ptr) //receive info from the board
+{
+    struct timespec start_timer;
+    unsigned int start_pkt_timestamp;
+//    double round_error = 0;
+
+    memset (&start_timer, 0, sizeof(struct timespec) );
+    
+    signal(SIGUSR1, user_signal);
+    while (terminate != 1)
+    {
+        struct timespec recv_time;
+        int start_time_set = 0;
+        int current_board_tick = 0;
+
+#ifdef DEBUG
+        fprintf(stderr, "listener: waiting to recvfrom...\n");
+        fflush (stderr);
+#endif
+
+        addr_len_input = sizeof their_addr_input;
+        if ((numbytes_input = recvfrom(sockfd_input, buffer_input, 1514 , 0, (struct sockaddr *)&their_addr_input, &addr_len_input)) == -1)
+        {
+            perror((char*)"error recvfrom");
+            fflush (stderr);
+            exit(-1);
+        }
+
+        clock_gettime(CLOCK_REALTIME, &recv_time);
+
+        scanptr = (sdp_msg*) buffer_input;
+
+        if (start_timer.tv_sec == 0)
+        {
+            start_timer.tv_sec = recv_time.tv_sec;
+            start_timer.tv_nsec = recv_time.tv_nsec;
+            start_pkt_timestamp = scanptr -> arg2;
+            start_time_set = 1;
+        }
+
+#ifdef DEBUG
+        fprintf (stderr, "received %d bytes\n", numbytes_input);
+        fprintf (stderr, "destination port %X\n", scanptr->dest_port);
+        fprintf (stderr, "source port %X\n", scanptr->srce_port);
+        
+        fflush (stderr);
+//        printf("listener: got packet from %s\n", inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s));
+//        printf("listener: packet is %d bytes long\n", numbytes);
+//        buffer_input[numbytes] = '\0';
+//        printf("listener: packet contains \"%s\"\n", buffer_input);
+#endif
+        
+        if (scanptr->srce_port >> 5 == 3) //not using htonl to convert the endianness
+        {
+            //TODO
+            struct itimerspec tout_val_sync, stop_timer;
+//            struct itimerval tout_val_sync, stop_timer;
+
+			memset (&tout_val_sync, 0, sizeof(struct itimerspec));
+			memset (&stop_timer, 0, sizeof(struct itimerspec));
+//			setitimer(ITIMER_REAL, &tout_val_sync,0); //clear the timer signal
+
+#ifdef DEBUG
+            fprintf (stderr, "resync timer\n");
+            fflush (stderr);
+#endif
+
+            if (start_time_set == 0)
+            {
+                int board_tick_diff;
+                long long elapsed_time, current_time;
+                long double new_interval;
+                int status;
+                
+				current_time = ((long long)recv_time.tv_sec * 1000000000) + (long long) recv_time.tv_nsec;
+                current_board_tick = scanptr -> arg2;
+
+				elapsed_time = current_time - ((long long)start_timer.tv_sec * 1000000000 + (long long) start_timer.tv_nsec);
+                board_tick_diff = current_board_tick - start_pkt_timestamp;
+				new_interval = ((long double)elapsed_time) / ((long double)board_tick_diff);
+
+#ifdef DEBUG
+                fprintf (stderr, "resync timer: initial timer value: %ld sec, %ld nsec\n", tout_val.it_interval.tv_sec, tout_val.it_interval.tv_nsec);
+                fprintf (stderr, "board ticks: %d\nelapsed host time: %lld usec\n", board_tick_diff, elapsed_time);
+                fprintf (stderr, "tick time interval: %Lf usec\n", new_interval);
+                fflush (stderr);
+#endif
+
+                //TODO
+//				setitimer(ITIMER_REAL, &stop_timer, &tout_val_sync);
+                status = timer_settime(timerid, 0, &stop_timer, &tout_val_sync);
+                if (status != 0)
+                {
+                    perror ("timer_settime");
+                    exit(status);
+                }
+
+                if (scanptr -> arg2 >= time_count)
+                { //sync packet arriving after timer tick -> recharge timer with appropriate value
+                    new_interval = floorl(new_interval); //make the timer quicker so to oscillate between the two possibilities
+
+		            tout_val.it_interval.tv_sec = (long) truncl((new_interval) / (long double)1000000000);
+		            tout_val.it_interval.tv_nsec = (long) roundl(new_interval - (long double)(tout_val.it_interval.tv_sec * 1000000000));
+
+					if (tout_val_sync.it_value.tv_sec == 0 && tout_val_sync.it_value.tv_nsec < 50000)
+						tout_val_sync.it_value.tv_nsec = 50000;
+
+//                    tout_val_sync.it_value.tv_sec = tout_val.it_interval.tv_sec;
+//                    tout_val_sync.it_value.tv_usec = tout_val.it_interval.tv_usec;
+                }
+                else
+                { //sync packet arriving before timer tick -> trigger timer immediately and recharge the interval with the appropriate value
+                    new_interval = ceill(new_interval); //make the timer slower so to oscillate between the two possibilities
+
+		            tout_val.it_interval.tv_sec = (long) truncl((new_interval) / (long double)1000000000);
+		            tout_val.it_interval.tv_nsec = (long) roundl(new_interval - (long double)(tout_val.it_interval.tv_sec * 1000000000));
+
+                    tout_val_sync.it_value.tv_sec = 0;
+                    tout_val_sync.it_value.tv_nsec = 50000;
+                }
+
+                tout_val_sync.it_interval.tv_sec = tout_val.it_interval.tv_sec;
+                tout_val_sync.it_interval.tv_nsec = tout_val.it_interval.tv_nsec;
+                
+#ifdef DEBUG
+                fprintf (stderr, "resync timer: current timer value: %ld sec, %ld usec\n", tout_val.it_interval.tv_sec, tout_val.it_interval.tv_nsec);
+                fflush (stderr);
+#endif
+
+            //resync timer
+                //TODO
+//                setitimer(ITIMER_REAL, &tout_val_sync, NULL); //reset the timer signal
+                status = timer_settime(timerid, 0, &tout_val_sync, NULL);
+                if (status != 0)
+                {
+                    perror ("timer_settime");
+                    exit(status);
+                }
+                
+                spike_heard = 1;
+
+            }
+            else
+            {
+                int status;
+                
+                tout_val_sync.it_interval.tv_sec = tout_val.it_interval.tv_sec;
+                tout_val_sync.it_interval.tv_nsec = tout_val.it_interval.tv_nsec;
+
+                if (scanptr -> arg2 >= time_count)
+                { //sync packet arriving after timer tick -> recharge timer with appropriate value
+                    tout_val_sync.it_value.tv_sec = tout_val.it_interval.tv_sec;
+                    tout_val_sync.it_value.tv_nsec = tout_val.it_interval.tv_nsec;
+                }
+                else
+                { //sync packet arriving before timer tick -> trigger timer immediately and recharge the interval with the appropriate value
+                    tout_val_sync.it_value.tv_sec = 0;
+                    tout_val_sync.it_value.tv_nsec = 10000;
+                }
+
+#ifdef DEBUG
+                fprintf (stderr, "resync timer: current timer value: %ld sec, %ld usec\n", tout_val.it_interval.tv_sec, tout_val.it_interval.tv_nsec);
+                fflush (stderr);
+#endif
+
+                //resync timer
+                //TODO
+//                setitimer(ITIMER_REAL, &tout_val_sync,0); //reset the timer signal
+                status = timer_settime(timerid, 0, &tout_val_sync, NULL);
+                if (status != 0)
+                {
+                    perror ("timer_settime");
+                    exit(status);
+                }
+                
+                spike_heard = 1;
+            }
+
+        }
+
+        if (scanptr -> cmd_rc == 256 && scanptr->srce_port >> 5 == 1) //not using htonl to convert the endianness
+        {
+            int i;
+            int numSpikes = 0;
+			unsigned int board_time;
+            //unsigned int *neuronIDs = (unsigned int *) (&(scanptr -> data));
+
+            //variables for visualizer 2
+            struct SpiNNakerPacket packet_visualizer;
+            unsigned int packet_visualizer_length;
+
+/*
+            pkt_counter++;
+            if (pkt_counter % RESYNC_INTERVAL == 0)
+            {
+                struct itimerval resync_timer;
+
+                struct timeval current_time;
+                struct timeval time_diff;
+                int current_board_tick;
+                int board_tick_diff;
+                long long expected_time, time_error;
+
+                //gettimeofday(&current_time, NULL);
+                current_time.tv_sec = recv_time.tv_sec;
+                current_time.tv_usec = recv_time.tv_usec;
+                current_board_tick = scanptr -> arg2;
+
+                if (current_time.tv_usec < start_timer->tv_usec)
+                {
+                    current_time.tv_sec--;
+                    current_time.tv_usec += 1000000;
+                }
+                time_diff.tv_sec = current_time.tv_sec - start_timer->tv_sec;
+                time_diff.tv_usec = current_time.tv_usec - start_timer->tv_usec;
+                board_tick_diff = current_board_tick - start_pkt_timestamp;
+                expected_time = board_tick_diff * ms_tick;
+                time_error = (expected_time - ((long long) time_diff.tv_sec*1000000 + (long long) time_diff.tv_usec)) / (current_board_tick - start_pkt_timestamp);
+#ifdef DEBUG
+                fprintf (stderr, "resync timer: initial timer value: %ld sec, %ld usec\n", tout_val.it_interval.tv_sec, tout_val.it_interval.tv_usec);
+                fprintf (stderr, "board ticks: %d, time difference: %ld sec, %ld usec\n", board_tick_diff, time_diff.tv_sec, time_diff.tv_usec);
+                fprintf (stderr, "expected time: %lld, time error: %lld usec\n", expected_time, time_error);
+                fflush (stderr);
+#endif
+                tout_val.it_interval.tv_sec += (long) floor((float)time_error / (float)1000000);
+                tout_val.it_interval.tv_usec += time_error % 1000000;
+#ifdef DEBUG
+                fprintf (stderr, "resync timer: current timer value: %ld sec, %ld usec\n", tout_val.it_interval.tv_sec, tout_val.it_interval.tv_usec);
+                fflush (stderr);
+#endif
+
+                getitimer(ITIMER_REAL, &resync_timer);
+
+                resync_timer.it_interval.tv_sec = tout_val.it_interval.tv_sec;
+                resync_timer.it_interval.tv_usec = tout_val.it_interval.tv_usec;
+
+                setitimer(ITIMER_REAL, &resync_timer, 0); //reset the timer signal
+            }
+*/
+
+#ifdef DEBUG
+            fprintf (stderr, "recognized spike\n");
+            fflush (stderr);
+#endif
+
+            board_time = scanptr -> arg2;
+            numSpikes = scanptr -> arg1;
+
+            for (i=0; i<numSpikes; i++)
+            {
+                unsigned int currentID = ((unsigned int*) &(scanptr -> data)) [i];
+
+#ifdef DEBUG
+//                fprintf (stderr, "received: %8.8X, converted: %8.8X\n", neuronIDs[i], currentID);
+                fprintf (stderr, "Time: %d, Spike received: %8.8X\n", board_time, currentID); //writing the received ID to the stderr (printed on screen)
+                fflush (stderr);
+#endif
+
+                fflush (stderr);
+
+                if (binary_input)
+                {
+                    fwrite(&board_time, sizeof(unsigned int), 1, foutput); //writing the time to the stdout in binary format
+                    fwrite(&currentID, sizeof(unsigned int), 1, foutput); //writing the received ID to the stdout in binary format
+                    fflush(foutput);
+                    if (replicate_output)
+                    {
+                        fwrite(&board_time, sizeof(unsigned int), 1, stdout); //writing the time to the stdout in binary format
+                        fwrite(&currentID, sizeof(unsigned int), 1, stdout); //writing the received ID to the stdout in binary
+                        fflush(stdout);
+                    }
+                }
+                else
+                {
+                    fprintf(foutput, "%X;%X;",board_time, currentID);
+                    fflush (foutput);
+                    if (replicate_output)
+                    {
+                        fprintf(stdout, "%X;%X;",board_time, currentID);
+                        fflush (stdout);
+                    }
+                }
+
+            }
+
+            if (visualizer2_on)
+            {
+                //build the packet for the visualizer 2
+                packet_visualizer.version = SPINNPROTVERSION;
+                packet_visualizer.subversion = SPINNPROTSUBVERSION;
+                packet_visualizer.opcode = htonl(STIM_OUT);
+                packet_visualizer.option1 = htonl(0);
+                packet_visualizer.option2 = htonl(numSpikes * 4);
+                packet_visualizer.option3 = htonl(0);
+                memcpy(&packet_visualizer.array, &(scanptr->data), numSpikes * 4);
+
+                packet_visualizer_length = SPINNHEADERLENGTH+(numSpikes * 4);
+
+#ifdef DEBUG
+                fprintf (stderr, "sending to visualizer 2\n");
+                fflush (stderr);
+#endif
+                
+                if ((sendto(sockfd_visualizer2, &packet_visualizer, packet_visualizer_length, 0, (struct sockaddr *) &sin_visualizer2, sizeof(sin_visualizer2))) == -1)  // send packet
+                {
+                    perror("oh dear - we didn't send our data to visualizer 2!\n");   // if numbytes = 0 then didn't send any data
+//                    exit(1);   //continue even if you don't send the data to the visualizer - next round will go better...
+                }
+            }
+
+        }
+        fflush (stderr);
+        if (terminate == 1)
+            break;
+    }
+
+    return NULL;
+}
+
+void user_signal (int sig)
+{
+    pthread_exit(NULL);
+}
+
+void* file_input_thread (void *ptr)
+{
+    unsigned int temp_value_in, ans;
+    
+    fprintf (stderr, "into file input thread\n");
+    fflush (stderr);
+
+#ifdef DEBUG
+    fprintf (stderr, "file handle: %ld\n", (long) finput);
+    if (finput != stdin)
+    {
+        fprintf (stderr, "input/output format: %s\n", (binary_input==0)?"Text":"Binary");
+        fseek(finput, 0, SEEK_END);
+        fprintf (stderr, "file size: %ld bytes\n", ftell(finput));
+        fseek(finput, 0, SEEK_SET);
+    }
+    fflush (stderr);
+#endif
+
+    do {        
+        if (binary_input)
+        {
+            ans = fread(&temp_value_in, sizeof (unsigned int), 1, finput);
+#ifdef DEBUG
+        fprintf (stderr, "into binary reading section\n");
+        fflush (stderr);
+#endif
+        }
+        else
+        {
+            ans = fscanf(finput, "%u;", &temp_value_in);
+#ifdef DEBUG
+        fprintf (stderr, "into text reading section\n");
+        fflush (stderr);
+#endif
+        }
+        
+#ifdef DEBUG
+        fprintf (stderr, "read %d integers from input file data\n", ans);
+        fprintf (stderr, "read %d from input file data\n", temp_value_in);
+        fflush (stderr);
+#endif
+
+        if (ans == 1 && sent_before_end == 0)
+        {
+            if (temp_value_in == 0xFFFFFFFF)
+            {
+#ifdef DEBUG
+                fprintf (stderr, "%d spikes ready to be sent. wait for signal\n", (packet_num-1)*MAXBLOCKSIZE + packet_entries_num);
+                fflush (stderr);
+#endif
+
+                pthread_mutex_lock (&readmutex);
+                wait_for_timer = 1;
+                while (wait_for_timer == 1)
+                {
+//                    fprintf (stderr, "+");
+//                    fflush (stderr);
+                    pthread_cond_wait(&readcond, &readmutex);
+                }
+                pthread_mutex_unlock (&readmutex);
+
+#ifdef DEBUG
+                fprintf (stderr, "signal received\n");
+                fflush (stderr);
+#endif
+            }
+            else
+            {
+
+                pthread_mutex_lock (&new_spike_mutex);
+                spike_queueing = 1;
+
+                //queue spike list
+                if (packet_entries_num % MAXBLOCKSIZE == 0)
+                {
+#ifdef DEBUG
+                    fprintf (stderr, "generating new packet\n");
+                    fflush (stderr);
+#endif
+
+                    packets = (struct sdp_msg *) realloc(packets, sizeof(struct sdp_msg) * (packet_num + 1) ); //allocating a new spinnaker packet structure
+
+                    /*
+                    packets[packet_num].version = SPINNPROTVERSION;
+                    packets[packet_num].subversion = SPINNPROTSUBVERSION;
+                    packets[packet_num].opcode = htonl(STIM_OUT);
+                    packets[packet_num].option1 = htonl(0);
+                    */
+
+                    packets[packet_num].ip_time_out = 0x01;
+                    packets[packet_num].pad = 0;
+                    packets[packet_num].flags = 0x07;
+                    packets[packet_num].tag = 255;
+                    packets[packet_num].dest_port = 1 << 5 | 1;
+                    packets[packet_num].srce_port = 255;
+                    packets[packet_num].dest_addr = 0;
+                    packets[packet_num].srce_addr = 0;
+                    packets[packet_num].cmd_rc = 256;
+                    packets[packet_num].arg2 = 0;
+                    packets[packet_num].arg3 = 0;
+                    packet_num ++; packet_entries_num = 0;
+
+#ifdef DEBUG
+                    fprintf (stderr, "packet generation complete\n");
+                    fflush (stderr);
+#endif
+                }
+
+#ifdef DEBUG
+                fprintf (stderr, "Queueing spike\n");
+                fflush (stderr);
+#endif
+                packets[packet_num - 1].data[packet_entries_num] = temp_value_in;
+                packet_entries_num++;
+#ifdef DEBUG
+                fprintf (stderr, "Queue spike complete\n");
+                fflush (stderr);
+#endif
+                spike_queueing = 0;
+                pthread_mutex_unlock(&new_spike_mutex);
+                pthread_cond_signal(&new_spike_cond);
+            }
+        }
+
+        if (sent_before_end == 1)
+        {
+            int b;
+#ifdef DEBUG
+            fprintf (stderr, "Packets sent before end of frame - dropping following spikes\n");
+            fflush (stderr);
+#endif
+            do {
+
+                if (binary_input)
+                    b = fread(&temp_value_in, sizeof (unsigned int), 1, finput);
+                else
+                    b = fscanf(finput, "%d;", &temp_value_in);
+
+
+            } while (b == 1 && temp_value_in != 0xFFFFFFFF);
+
+            sent_before_end = 0;
+
+#ifdef DEBUG
+            fprintf (stderr, "End re-synchronization routine (Sent before end of frame)\n");
+            fflush (stderr);
+#endif
+        }
+
+#ifdef DEBUG
+        fprintf (stderr, "End file input loop\n");
+        fflush (stderr);
+#endif
+    } while (!feof(finput));
+    terminate = 1;
+
+    fprintf (stderr, "ticks: %d\n", time_count);
+    fflush (stderr);
+
+    return NULL;
+}
+
+void timer_signal (int j)
+{
+    unsigned int i;
+    int numbytes;
+    struct timeval current_time;
+
+#ifdef DEBUG
+    fprintf (stderr, "into timer signal interrupt\n");
+    fflush (stderr);
+#endif
+
+/*
+//resynchronization on the internal timer
+    if (time_count % 2000 == 0 && time_count > 0 && start_timer != NULL)
+    {
+        long long expected_time, time_shift, next_tick, current_relative_time;
+        struct itimerval new_timer, old_timer;
+
+        gettimeofday(&current_time, NULL);
+        getitimer(ITIMER_REAL, &old_timer);
+
+        expected_time = ((long long) time_count * (long long) ms_tick) * 1000;
+        current_relative_time = (long long) ((current_time.tv_sec * 1000000) + current_time.tv_usec) - (long long) ((start_timer->tv_sec * 1000000) + start_timer->tv_usec);
+        time_shift = expected_time - current_relative_time;
+        next_tick = time_shift + (ms_tick * 1000);
+
+        if(next_tick < 0 || next_tick >= 2 * ms_tick * 1000)
+        {
+            fprintf (stderr, "Synchrony with spinnaker board lost, resynchronizing to the next possible tick\n");
+            fprintf (stderr, "Expected time (usec): %lld, Current relative time (usec): %lld\n", expected_time, current_relative_time);
+            fprintf (stderr, "Expected resync time: %lld\n", next_tick);
+            fflush (stderr);
+            next_tick = next_tick % (ms_tick * 1000);
+        }
+        
+        new_timer.it_interval.tv_sec = old_timer.it_interval.tv_sec;
+        new_timer.it_interval.tv_usec = old_timer.it_interval.tv_usec;
+        new_timer.it_value.tv_sec = (long int) floor((double)next_tick / (double)1000000);
+        new_timer.it_value.tv_usec = (long int) next_tick % 1000000;
+
+        setitimer(ITIMER_REAL, &new_timer, NULL);
+
+//        fprintf (stderr, "Expected time (usec): %lld, Current relative time (usec): %lld\n", expected_time, current_relative_time);
+//        fprintf (stderr, "Expected resync time: %lld\n", next_tick);
+    }
+*/
+
+    if (terminate == 1)
+    {
+        tout_val.it_value.tv_sec = tout_val.it_interval.tv_sec = 0;
+        tout_val.it_value.tv_nsec = tout_val.it_interval.tv_nsec = 0;
+
+        //TODO
+//        setitimer(ITIMER_REAL, &tout_val,0); //reset the timer signal
+    }
+    
+    if (sent_before_end == 0 && ((spike_heard == 1 && real_time == 0) || (real_time == 1)))
+    {
+
+		time_count ++;
+
+        pthread_mutex_lock (&readmutex);
+        if (wait_for_timer == 0)
+        {
+            sent_before_end = 1;
+            pthread_mutex_unlock (&readmutex);
+            pthread_cond_signal(&readcond);
+#ifdef DEBUG
+            fprintf (stderr, "Sending spike packets before the end of the input spike frame...\n");
+            fflush (stderr);
+#endif
+        }
+        else
+        {
+            pthread_mutex_unlock (&readmutex);
+            pthread_cond_signal(&readcond);
+        }
+
+#ifdef DEBUG
+        fprintf (stderr, "sending packet(s)\n");
+        fflush (stderr);
+#endif
+
+        pthread_mutex_lock(&new_spike_mutex);
+        while (spike_queueing == 1)
+            pthread_cond_wait(&new_spike_cond, &new_spike_mutex);
+
+        // send the packets
+        for (i = 0; i < packet_num; i++)
+        {
+            int length;
+
+            if (i + 1 < packet_num)
+            {
+                length = 26+256;
+                packets[i].arg1 = 64; //removed htonl because is not used on the simulator side
+            }
+            else
+            {
+                length = 26+(packet_entries_num*4);
+                packets[i].arg1 = packet_entries_num;
+            }
+
+#ifdef DEBUG
+            fprintf (stderr, "output to board - socket: %d\n", sockfd_output_board);
+            fflush (stderr);
+#endif
+
+            gettimeofday(&current_time, NULL);
+            packets[i].arg3 = (current_time.tv_sec * 1000000) + current_time.tv_usec;
+            if ((numbytes = sendto(sockfd_output_board, &packets[i], length, 0, (struct sockaddr *) &sin_output_board, sizeof(sin_output_board))) == -1)  // send packet
+            {
+                perror("oh dear - we didn't send our data to the spinnaker board!\n");   // if numbytes = 0 then didn't send any data
+                exit(1);   // temporarily disabled for debugging.
+            }
+
+
+            if (visualizer1_on)
+            {
+                struct SpiNNakerPacket packet_visualizer;
+                unsigned int packet_visualizer_length;
+
+                packet_visualizer.version = SPINNPROTVERSION;
+                packet_visualizer.subversion = SPINNPROTSUBVERSION;
+                packet_visualizer.opcode = htonl(STIM_OUT);
+                packet_visualizer.option1 = htonl(0);
+                packet_visualizer.option2 = htonl(packets[i].arg1*4);
+                packet_visualizer.option3 = htonl(0);
+                memcpy(&packet_visualizer.array, &packets[i].data, packets[i].arg1 * 4);
+
+                packet_visualizer_length = SPINNHEADERLENGTH+(packets[i].arg1 * 4);
+
+#ifdef DEBUG
+                fprintf (stderr, "output to visualizer1 - socket: %d\n", sockfd_visualizer1);
+                fflush (stderr);
+#endif
+
+                //generate a spinnaker packet for the visualizer
+#ifdef DEBUG
+                fprintf (stderr, "sending to visualizer 1\n");
+                fflush (stderr);
+#endif
+
+                if ((numbytes = sendto(sockfd_visualizer1, &packet_visualizer, packet_visualizer_length, 0, (struct sockaddr *) &sin_visualizer1, sizeof(sin_visualizer1))) == -1)  // send packet
+                {
+                    perror("oh dear - we didn't send our data to visualizer 1!\n");   // if numbytes = 0 then didn't send any data
+                    //exit(1);   // temporarily disabled for debugging.
+                }
+            }
+        }
+
+        if (packet_num != 0)
+        {
+            free(packets);
+            packets = NULL;
+            packet_entries_num = 0;
+            packet_num = 0;
+        }
+
+        pthread_mutex_unlock(&new_spike_mutex);
+
+#ifdef DEBUG
+        fprintf (stderr, "packet(s) succesfully sent\n");
+        fflush (stderr);
+#endif
+    }
+
+/*
+    else if(spike_heard == 0 && real_time == 0)
+    {
+        struct sdp_msg packet_ack;
+        unsigned int length_ack;
+
+//        fprintf (stderr, "sending ack\n");
+
+        packet_ack.subversion = SPINNPROTSUBVERSION;
+        packet_ack.version = SPINNPROTVERSION;
+        packet_ack.opcode = htonl(ACK);
+        packet_ack.option1 = 0;
+        packet_ack.option2 = 0;
+        packet_ack.option3 = 0;
+        length_ack = SPINNHEADERLENGTH;
+
+        if ((numbytes = sendto(sockfd_output_board, &packet_ack, length_ack, 0, (struct sockaddr *) &sin_output_board, sizeof(sin_output_board))) == -1)  // send packet
+        {
+            perror("oh dear - we didn't send our data - ACK sending routine!\n");   // if numbytes = 0 then didn't send any data
+            exit(1);   // temporarily disabled for debugging.
+        }
+    }
+*/
+    
+    if (real_time == 1 || (real_time == 0 && spike_heard == 1))
+    {
+        pthread_mutex_lock (&readmutex);
+        wait_for_timer = 0;
+#ifdef DEBUG
+        fprintf (stderr, "setting wait_for_timer to 0\n");
+        fflush (stderr);
+#endif
+        pthread_mutex_unlock (&readmutex);
+        pthread_cond_signal(&readcond);
+    }
+
+#ifdef DEBUG
+    fprintf (stderr, "exiting timer signal interrupt\n");
+    fflush (stderr);
+#endif
+}
+
+void print_help(char filename[])
+{
+    fprintf (stderr, "%s - A Spike sender / receiver for the SpiNNaker board\n", filename);
+    fprintf (stderr, "Syntax:\n%s -m ms_tick -s spinnaker_board_address [-v hostname:port]\n", filename);
+    fprintf (stderr, "[-w hostname:port] [-t|-b] [-i filename] [-o filename [-r]] [-h]\n\n");
+    fprintf (stderr, "-b\n");
+    fprintf (stderr, "    Identifies binary input / output\n\n");
+    fprintf (stderr, "-h\n");
+    fprintf (stderr, "    Prints this help\n\n");
+    fprintf (stderr, "-i filename\n");
+    fprintf (stderr, "    Input file name - this file contains the spikes to\n");
+    fprintf (stderr, "    be sent to the SpiNNaker board\n\n");
+    fprintf (stderr, "-m ms_tick\n");
+    fprintf (stderr, "    Time of a timer tick on the spinnaker board in millisecond\n");
+    fprintf (stderr, "     (real time/simulated time)\n");
+    fprintf (stderr, "    ms_tick = 1 means real time\n");
+    fprintf (stderr, "    ms_tick = 10 means simulation time = 10 times slower than real time\n\n");
+    fprintf (stderr, "-o filename\n");
+    fprintf (stderr, "    Output file name - this file contains the spikes received\n");
+    fprintf (stderr, "    from the SpiNNaker board\n\n");
+    fprintf (stderr, "-r\n");
+    fprintf (stderr, "    replicate the spikes from the SpiNNaler board both on\n");
+    fprintf (stderr, "    the output file and on the standard output\n\n");
+    fprintf (stderr, "-s spinnaker_board_address\n");
+    fprintf (stderr, "    address of the spinnaker board (or board name)\n\n");
+    fprintf (stderr, "-t\n");
+    fprintf (stderr, "    Identifies text input / output\n\n");
+    fprintf (stderr, "-v hostname:port\n");
+    fprintf (stderr, "    Identifies the host running the visualizer for the input spikes\n\n");
+    fprintf (stderr, "-w hostname:port\n");
+    fprintf (stderr, "    Identifies the host running the visualizer for the output spikes\n\n\n");
+    fprintf (stderr, "This software handles the spiking interface with the SpiNNaker board.\n");
+    fprintf (stderr, "\"Input\" spikes are those sourced from the host and sent to the board.\n");
+    fprintf (stderr, "\"Output\" spikes are those sourced from the board and sent to the host.\n\n");
+    fprintf (stderr, "This server waits for an incoming syncronization packet generated by the\n");
+    fprintf (stderr, "SpiNNaker board using a SDP packet with destination on port 3 on the host.\n\n");
+    fprintf (stderr, "If no input / output files are specified, the server accepts data from the\n");
+    fprintf (stderr, "standard input and writes the output on the standard output.\n\n");
+    fprintf (stderr, "The input file in binary format is composed by a series of frame ending\n");
+    fprintf (stderr, "with the value -1 (0xFFFFFFFF). The values in the frame are the neuron IDs\n");
+    fprintf (stderr, "expressed as binary numbers that will be send as routing key in multicast\n");
+    fprintf (stderr, "packet on the SpiNNaker system.\n\n");
+    fprintf (stderr, "The input file in text format is composed by a series of frame ending\n");
+    fprintf (stderr, "with the value -1 (0xFFFFFFFF). The values in the frame are the neuron IDs\n");
+    fprintf (stderr, "expressed as text in hexadecimal format that will be send as routing key\n");
+    fprintf (stderr, "in multicast packet on the SpiNNaker system.\n\n");
+    fprintf (stderr, "The output generated is composed by two numbers of 32 bits: the first number\n");
+    fprintf (stderr, "represents the time of the event, while the second number represents the ID\n");
+    fprintf (stderr, "of the neuron that emitted a spike. The output generated follows the same\n");
+    fprintf (stderr, "format (binary/text) of the input file.\n");
+    exit(0);
+}
+

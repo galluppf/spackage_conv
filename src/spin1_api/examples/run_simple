@@ -1,0 +1,18 @@
+sp root
+
+sload simple.aplx f5000000
+as f5000000 2
+
+sp 0 1
+sload simple.aplx f5000000
+as f5000000 2
+
+sp 1 0
+sload simple.aplx f5000000
+as f5000000 2
+
+sp 1 1
+sload simple.aplx f5000000
+as f5000000 2
+
+sp root

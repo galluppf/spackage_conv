@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+# Requires nengo-564b031 or greater
+./nengo-cl $@
+cd nengo_spinnaker_interface
+python ./compile_nengo_model.py
