@@ -183,12 +183,24 @@ void configure_recording_space()
 $decode_synaptic_word
 """)
 
+cleanup_database = Template("""
+delete from cell_parameters where model_id in
+(SELECT id FROM cell_types where name = '$model_name');
+
+delete from synapse_types where cell_type_id in
+(SELECT id FROM cell_types where name = '$model_name');
+
+delete from cell_types where id in
+(SELECT id FROM cell_types where name = '$model_name');
+
+""")
+
 insert_neural_parameter_query = Template("""
 INSERT INTO 
-cell_parameters (model_id, param_name, type, translation, position) 
+cell_parameters (model_id, param_name, type, translation, position, translate) 
 VALUES (
     (SELECT id FROM cell_types where name = '$model_name'), 
-    '$param_name', '$param_type', "$param_translation", $param_position);
+    '$param_name', '$param_type', "$param_translation", $param_position, $translate);
 """)
 
 insert_neural_model_query = Template("""

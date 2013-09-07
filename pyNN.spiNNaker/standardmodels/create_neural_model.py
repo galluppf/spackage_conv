@@ -43,6 +43,10 @@ DEBUG = False
 
 dao = p.setup(db_name='/tmp/model_creator.db')
 
+FALSE               = 0
+TRUE                = 1
+ONE_PER_POPULATION  = 2
+
 class NeuralModel():
     """
     Initialises a new neural model:
@@ -55,7 +59,7 @@ class NeuralModel():
 
     """    
     def __init__(self, model_name=None, default_neurons_per_core=None, \
-        image_name=None, generate_sdram_connectivity=True):
+        image_name=None, generate_sdram_connectivity=1):
         
         self.model_name = model_name
         self.default_neurons_per_core = default_neurons_per_core
@@ -64,11 +68,12 @@ class NeuralModel():
             self.image_name = model_name + ".aplx"
         self.id = None
         self.num_parameters = 0
+        self.num_parameters_population = 0
         self.parameters = list()
         self.synapses = dict()
-        self.generate_sdram_connectivity = 1
+        self.generate_sdram_connectivity = generate_sdram_connectivity
         
-    def add_parameter(self, param_name, param_type, translation, default=0, translate=True):
+    def add_parameter(self, param_name, param_type, translation, default=0, translate=1):
         """
         Function used to add a parameter to a neural model. Requires the translations
         string for each parameter.
@@ -92,13 +97,24 @@ translation = "int(params['tau_m'][i]/params['cm'][i]*65536)")
         
         """
     
-        if translate:   self.num_parameters += 1
+        if translate == True:   
+            self.num_parameters += 1
+            position = self.num_parameters
+
+        elif translate == ONE_PER_POPULATION:
+            self.num_parameters_population +=1 
+            position = self.num_parameters_population
+            
+        else:
+            position = 0
+        
         neural_parameter = {
             'param_name'    : param_name,
             'param_type'    : param_type,
             'translation'   : translation,
-            'position'      : self.num_parameters,
-            'default'       : default
+            'position'      : position,
+            'default'       : default,
+            'translate'     : translate
             }
         
 
@@ -241,7 +257,7 @@ translation = "int(params['tau_m'][i]/params['cm'][i]*65536)")
                 param_translation = p['translation'],
                 param_position = p['position'],
                 model_name = self.model_name,
-                generate_sdram_connectivity = self.generate_sdram_connectivity
+                translate = p['translate']
                 )
         return sql_out
         
@@ -253,7 +269,11 @@ translation = "int(params['tau_m'][i]/params['cm'][i]*65536)")
         :param filename: (str) if passed will create a file to the path specified
         """
 
-        out_sql_script = "-- SQL bindings for model %s" % self.model_name
+        out_sql_script = "-- SQL bindings for model %s\n" % self.model_name
+        
+        out_sql_script += "-- Cleanup --"
+        out_sql_script += model_templates.cleanup_database.substitute( \
+            model_name = self.model_name)
         
         out_sql_script += "\n-- Neural model into cell_types:"
         out_sql_script += model_templates.insert_neural_model_query.substitute( \

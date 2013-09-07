@@ -162,24 +162,25 @@ def compute_neural_structures(db, processor_id):
         # starts cycling neurons
         for i in range(p['size']):      # starts cycling neurons in the population
             for parameter_translation in translations:  # starts cycling parameters translations            
-#               horrible hack for parameters with the same name # FIXME to be deprecated
-                value = params[parameter_translation['param_name']][i]                  # value is the value of the correspondent param_name
-#               end of horrible hack
-                try:
-                    translated_parameter = eval(parameter_translation['translation'])      # evaluate the expression            
-                    if DEBUG:   print "n:", i, parameter_translation['param_name'], ", value ", params[parameter_translation['param_name']][i], "is translated with", parameter_translation['translation'], "as ", translated_parameter, "and will be packed as <%s" % parameter_translation['type']                    
-                    out_file_content += struct.pack("<%s" % str(parameter_translation['type']), translated_parameter)
-                except KeyError:
-                        print "error while evaluating parameter", parameter_translation['param_name'], "for neuron", i, "in part population", p['id']
-                        quit(1)
-                    
-                except struct.error:
-                        print "\n\n !!! WARNING !!!  while evaluating parameter\n\n", parameter_translation['param_name'], "for neuron", i, "in part population", p['id'], 'value', value
-                        if translated_parameter<0: translated_parameter = -(pow(2,32)-1)/2
-                        else:                            translated_parameter = (pow(2,32)-1)/2
-                        out_file_content += struct.pack("<%s" % str(parameter_translation['type']), translated_parameter)                            
-                        continue
+                if parameter_translation['translate']:
+    #               horrible hack for parameters with the same name # FIXME to be deprecated
+                    value = params[parameter_translation['param_name']][i]                  # value is the value of the correspondent param_name
+    #               end of horrible hack
+                    try:
+                        translated_parameter = eval(parameter_translation['translation'])      # evaluate the expression            
+                        if DEBUG:   print "n:", i, parameter_translation['param_name'], ", value ", params[parameter_translation['param_name']][i], "is translated with", parameter_translation['translation'], "as ", translated_parameter, "and will be packed as <%s" % parameter_translation['type']                    
+                        out_file_content += struct.pack("<%s" % str(parameter_translation['type']), translated_parameter)
+                    except KeyError:
+                            print "error while evaluating parameter", parameter_translation['param_name'], "for neuron", i, "in part population", p['id']
+                            quit(1)
                         
+                    except struct.error:
+                            print "\n\n !!! WARNING !!!  while evaluating parameter\n\n", parameter_translation['param_name'], "for neuron", i, "in part population", p['id'], 'value', value
+                            if translated_parameter<0: translated_parameter = -(pow(2,32)-1)/2
+                            else:                            translated_parameter = (pow(2,32)-1)/2
+                            out_file_content += struct.pack("<%s" % str(parameter_translation['type']), translated_parameter)                            
+                            continue
+                            
                         
     if DEBUG:   print "writing file %s" % out_file_name
     out_file = open(out_file_name,'wb')

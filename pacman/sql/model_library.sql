@@ -19,89 +19,6 @@ INSERT INTO "plasticity_parameters" VALUES(5,2,'tau_plus');
 INSERT INTO "plasticity_parameters" VALUES(6,2,'tau_minus');
 INSERT INTO "plasticity_parameters" VALUES(7,3,'tau_plus');
 INSERT INTO "plasticity_parameters" VALUES(8,3,'tau_minus');
-CREATE TABLE cell_parameters (
-    "position" INTEGER,
-    id INTEGER PRIMARY KEY,
-    "model_id" INTEGER,
-    "param_name" TEXT,
-    "type" TEXT,
-    "translation" TEXT
-);
-INSERT INTO "cell_parameters" VALUES(1,1,1,'v_init','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(2,2,1,'v_rest','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(3,3,1,'v_reset','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(4,4,1,'v_thresh','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(5,5,1,'tau_m','i','int(p2/value)');
-INSERT INTO "cell_parameters" VALUES(6,6,1,'cm','i','int(params[''tau_m''][i]/params[''cm''][i]*p2)');
-INSERT INTO "cell_parameters" VALUES(7,7,1,'tau_refrac','i','int(value)');
-INSERT INTO "cell_parameters" VALUES(8,8,1,'tau_refrac_clock','i','0');
-INSERT INTO "cell_parameters" VALUES(3,9,2,'a','h','int(params[''a''][i]*params[''b''][i]*p2)');
-INSERT INTO "cell_parameters" VALUES(4,10,2,'b','h','int(-params[''a''][i]*p2)');
-INSERT INTO "cell_parameters" VALUES(5,11,2,'c','h','int(params[''c''][i]*p1)');
-INSERT INTO "cell_parameters" VALUES(6,12,2,'d','h','int(params[''d''][i]*p1)');
-INSERT INTO "cell_parameters" VALUES(1,13,2,'v_init','i','int(value*p1)');
-INSERT INTO "cell_parameters" VALUES(2,14,2,'u_init','i','int(value*p1)');
-INSERT INTO "cell_parameters" VALUES(7,15,2,'tau_syn_E','H','int(p2/params[''tau_syn_E''][i])');
-INSERT INTO "cell_parameters" VALUES(8,16,2,'tau_syn_I','H','int(p2/params[''tau_syn_I''][i])');
-INSERT INTO "cell_parameters" VALUES(9,17,2,'i_offset','i','int(params[''i_offset''][i]*p1)');
-INSERT INTO "cell_parameters" VALUES(9,18,1,'i_offset','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(10,19,1,'tau_syn_E','i','int(p2/value)');
-INSERT INTO "cell_parameters" VALUES(11,20,1,'tau_syn_I','i','int(p2/value)');
-INSERT INTO "cell_parameters" VALUES(1,27,3,'decoder_0','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(1,28,5,'v_init','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(2,29,5,'v_rest','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(3,30,5,'tau_m','H','int(p2/params[''tau_m''][i])');
-INSERT INTO "cell_parameters" VALUES(4,31,5,'resistance','H','1');
-INSERT INTO "cell_parameters" VALUES(5,32,5,'v_reset','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(6,33,5,'v_thresh','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(7,34,5,'tau_syn_E','H','int(p2/params[''tau_syn_E''][i])');
-INSERT INTO "cell_parameters" VALUES(8,35,5,'tau_syn_I','H','int(p2/params[''tau_syn_I''][i])');
-INSERT INTO "cell_parameters" VALUES(9,36,5,'i_offset','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(10,37,5,'tau_refrac','H','int(params[''tau_refrac''][i])');
-INSERT INTO "cell_parameters" VALUES(11,38,5,'tau_refrac_clock','H','0');
-INSERT INTO "cell_parameters" VALUES(1,39,6,'packets','I','int(params[''packets''][i])');
-INSERT INTO "cell_parameters" VALUES(2,40,6,'time_per_neuron','I','int(params[''time_per_neuron''][i])');
-INSERT INTO "cell_parameters" VALUES(3,41,6,'lookup_instructions','I','int(params[''lookup_instructions''][i])');
-INSERT INTO "cell_parameters" VALUES(4,42,6,'dma_done_instructions','I','int(params[''dma_done_instructions''][i])');
-INSERT INTO "cell_parameters" VALUES(1,43,97,'v_init','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(2,44,97,'encoder_0','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(3,45,97,'i_offset','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(4,46,97,'value_current','i','0');
-INSERT INTO "cell_parameters" VALUES(5,47,97,'tau_refrac_clock','I','0');
-INSERT INTO "cell_parameters" VALUES(1,48,4,'v_init','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(2,49,4,'v_rest','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(3,50,4,'v_reset','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(4,51,4,'v_thresh','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(5,52,4,'tau_m','i','int(p2/value)');
-INSERT INTO "cell_parameters" VALUES(6,53,4,'cm','i','int(params[''tau_m''][i]/params[''cm''][i]*p2)');
-INSERT INTO "cell_parameters" VALUES(7,54,4,'tau_refrac','i','int(value)');
-INSERT INTO "cell_parameters" VALUES(8,55,4,'tau_refrac_clock','i','0');
-INSERT INTO "cell_parameters" VALUES(9,56,4,'i_offset','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(10,57,4,'tau_syn_E','i','int(p2/value)');
-INSERT INTO "cell_parameters" VALUES(11,58,4,'tau_syn_I','i','int(p2/value)');
-INSERT INTO "cell_parameters" VALUES(12,59,4,'e_rev_E','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(13,60,4,'e_rev_I','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(1,61,8,'decoder_0','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(1,62,7,'v_init','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(2,63,7,'encoder_0','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(4,64,7,'i_offset','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(5,65,7,'value_current','i','0');
-INSERT INTO "cell_parameters" VALUES(6,66,7,'tau_refrac_clock','I','0');
-INSERT INTO "cell_parameters" VALUES(3,67,7,'encoder_1','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(2,68,8,'decoder_1','i','int(value*p2)');
-INSERT INTO "cell_parameters" VALUES(1,69,9,'x_source','I','int(value)');
-INSERT INTO "cell_parameters" VALUES(2,70,9,'y_source','I','int(value)');
-INSERT INTO "cell_parameters" VALUES(1,86,100,'rate','Q','int(math.exp(-1000/params[''rate''][i])*math.pow(2,64))');
-INSERT INTO "cell_parameters" VALUES(2,87,100,'start','I','int(params[''start''][i])');
-INSERT INTO "cell_parameters" VALUES(3,88,100,'duration','I','int(params[''start''][i] + params[''duration''][i])');
-INSERT INTO "cell_parameters" VALUES(4,89,100,'time_to_next_spike','i','poisson.rvs(1000/params[''rate''][i])');
-INSERT INTO "cell_parameters" VALUES(1,90,104,'v','h','int(value)*256');
-INSERT INTO "cell_parameters" VALUES(2,91,104,'v_thresh','h','int(value)*256');
-INSERT INTO "cell_parameters" VALUES(3,92,104,'v_reset','h','int(value)*256');
-INSERT INTO "cell_parameters" VALUES(4,93,104,'v_rest','h','int(value)*256');
-INSERT INTO "cell_parameters" VALUES(5,94,104,'tau_refrac','h','int(value)');
-INSERT INTO "cell_parameters" VALUES(6,95,104,'tau_refrac_clock','h','int(value)');
-INSERT INTO "cell_parameters" VALUES(7,96,104,'tau_m','i','int(65536/value)');
 CREATE TABLE "flags" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "flag_name" TEXT,
@@ -175,8 +92,94 @@ CREATE TABLE plasticity_suffix (
 INSERT INTO "plasticity_suffix" VALUES(1,'SpikePairRule','_stdp_sp');
 INSERT INTO "plasticity_suffix" VALUES(2,'FullWindow','_stdp');
 INSERT INTO "plasticity_suffix" VALUES(3,'TimeToSpike','_tts');
+CREATE TABLE cell_parameters (
+    "position" INTEGER,
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "model_id" INTEGER,
+    "param_name" TEXT,
+    "type" TEXT,
+    "translation" TEXT,
+    "translate" NULL DEFAULT (1)
+);
+INSERT INTO "cell_parameters" VALUES(1,1,1,'v_init','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(2,2,1,'v_rest','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(3,3,1,'v_reset','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(4,4,1,'v_thresh','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(5,5,1,'tau_m','i','int(p2/value)',1);
+INSERT INTO "cell_parameters" VALUES(6,6,1,'cm','i','int(params[''tau_m''][i]/params[''cm''][i]*p2)',1);
+INSERT INTO "cell_parameters" VALUES(7,7,1,'tau_refrac','i','int(value)',1);
+INSERT INTO "cell_parameters" VALUES(8,8,1,'tau_refrac_clock','i','0',1);
+INSERT INTO "cell_parameters" VALUES(3,9,2,'a','h','int(params[''a''][i]*params[''b''][i]*p2)',1);
+INSERT INTO "cell_parameters" VALUES(4,10,2,'b','h','int(-params[''a''][i]*p2)',1);
+INSERT INTO "cell_parameters" VALUES(5,11,2,'c','h','int(params[''c''][i]*p1)',1);
+INSERT INTO "cell_parameters" VALUES(6,12,2,'d','h','int(params[''d''][i]*p1)',1);
+INSERT INTO "cell_parameters" VALUES(1,13,2,'v_init','i','int(value*p1)',1);
+INSERT INTO "cell_parameters" VALUES(2,14,2,'u_init','i','int(value*p1)',1);
+INSERT INTO "cell_parameters" VALUES(7,15,2,'tau_syn_E','H','int(p2/params[''tau_syn_E''][i])',1);
+INSERT INTO "cell_parameters" VALUES(8,16,2,'tau_syn_I','H','int(p2/params[''tau_syn_I''][i])',1);
+INSERT INTO "cell_parameters" VALUES(9,17,2,'i_offset','i','int(params[''i_offset''][i]*p1)',1);
+INSERT INTO "cell_parameters" VALUES(9,18,1,'i_offset','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(10,19,1,'tau_syn_E','i','int(p2/value)',1);
+INSERT INTO "cell_parameters" VALUES(11,20,1,'tau_syn_I','i','int(p2/value)',1);
+INSERT INTO "cell_parameters" VALUES(1,27,3,'decoder_0','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(1,28,5,'v_init','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(2,29,5,'v_rest','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(3,30,5,'tau_m','H','int(p2/params[''tau_m''][i])',1);
+INSERT INTO "cell_parameters" VALUES(4,31,5,'resistance','H','1',1);
+INSERT INTO "cell_parameters" VALUES(5,32,5,'v_reset','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(6,33,5,'v_thresh','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(7,34,5,'tau_syn_E','H','int(p2/params[''tau_syn_E''][i])',1);
+INSERT INTO "cell_parameters" VALUES(8,35,5,'tau_syn_I','H','int(p2/params[''tau_syn_I''][i])',1);
+INSERT INTO "cell_parameters" VALUES(9,36,5,'i_offset','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(10,37,5,'tau_refrac','H','int(params[''tau_refrac''][i])',1);
+INSERT INTO "cell_parameters" VALUES(11,38,5,'tau_refrac_clock','H','0',1);
+INSERT INTO "cell_parameters" VALUES(1,39,6,'packets','I','int(params[''packets''][i])',1);
+INSERT INTO "cell_parameters" VALUES(2,40,6,'time_per_neuron','I','int(params[''time_per_neuron''][i])',1);
+INSERT INTO "cell_parameters" VALUES(3,41,6,'lookup_instructions','I','int(params[''lookup_instructions''][i])',1);
+INSERT INTO "cell_parameters" VALUES(4,42,6,'dma_done_instructions','I','int(params[''dma_done_instructions''][i])',1);
+INSERT INTO "cell_parameters" VALUES(1,43,97,'v_init','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(2,44,97,'encoder_0','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(3,45,97,'i_offset','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(4,46,97,'value_current','i','0',1);
+INSERT INTO "cell_parameters" VALUES(5,47,97,'tau_refrac_clock','I','0',1);
+INSERT INTO "cell_parameters" VALUES(1,48,4,'v_init','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(2,49,4,'v_rest','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(3,50,4,'v_reset','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(4,51,4,'v_thresh','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(5,52,4,'tau_m','i','int(p2/value)',1);
+INSERT INTO "cell_parameters" VALUES(6,53,4,'cm','i','int(params[''tau_m''][i]/params[''cm''][i]*p2)',1);
+INSERT INTO "cell_parameters" VALUES(7,54,4,'tau_refrac','i','int(value)',1);
+INSERT INTO "cell_parameters" VALUES(8,55,4,'tau_refrac_clock','i','0',1);
+INSERT INTO "cell_parameters" VALUES(9,56,4,'i_offset','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(10,57,4,'tau_syn_E','i','int(p2/value)',1);
+INSERT INTO "cell_parameters" VALUES(11,58,4,'tau_syn_I','i','int(p2/value)',1);
+INSERT INTO "cell_parameters" VALUES(12,59,4,'e_rev_E','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(13,60,4,'e_rev_I','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(1,61,8,'decoder_0','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(1,62,7,'v_init','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(2,63,7,'encoder_0','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(4,64,7,'i_offset','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(5,65,7,'value_current','i','0',1);
+INSERT INTO "cell_parameters" VALUES(6,66,7,'tau_refrac_clock','I','0',1);
+INSERT INTO "cell_parameters" VALUES(3,67,7,'encoder_1','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(2,68,8,'decoder_1','i','int(value*p2)',1);
+INSERT INTO "cell_parameters" VALUES(1,69,9,'x_source','I','int(value)',1);
+INSERT INTO "cell_parameters" VALUES(2,70,9,'y_source','I','int(value)',1);
+INSERT INTO "cell_parameters" VALUES(1,86,100,'rate','Q','int(math.exp(-1000/params[''rate''][i])*math.pow(2,64))',1);
+INSERT INTO "cell_parameters" VALUES(2,87,100,'start','I','int(params[''start''][i])',1);
+INSERT INTO "cell_parameters" VALUES(3,88,100,'duration','I','int(params[''start''][i] + params[''duration''][i])',1);
+INSERT INTO "cell_parameters" VALUES(4,89,100,'time_to_next_spike','i','poisson.rvs(1000/params[''rate''][i])',1);
+INSERT INTO "cell_parameters" VALUES(1,98,104,'v','i','int(value)*65536',1);
+INSERT INTO "cell_parameters" VALUES(2,99,104,'time_last_input_spike','h','0',1);
+INSERT INTO "cell_parameters" VALUES(3,100,104,'time_last_output_spike','h','0',1);
+INSERT INTO "cell_parameters" VALUES(1,101,104,'v_thresh','h','int(value)*256',2);
+INSERT INTO "cell_parameters" VALUES(2,102,104,'v_reset','h','int(value)*256',2);
+INSERT INTO "cell_parameters" VALUES(3,103,104,'v_rest','h','int(value)*256',2);
+INSERT INTO "cell_parameters" VALUES(4,104,104,'tau_m','i','int(65536/value)',2);
+INSERT INTO "cell_parameters" VALUES(5,105,104,'tau_refrac','h','int(value)',2);
 DELETE FROM sqlite_sequence;
 INSERT INTO "sqlite_sequence" VALUES('flags',7);
+INSERT INTO "sqlite_sequence" VALUES('cell_parameters',105);
 CREATE UNIQUE INDEX idx_cell_types_name ON cell_types (name);
 CREATE UNIQUE INDEX idx_synapse_types ON synapse_types (cell_type_id, synapse_name);
 COMMIT;
