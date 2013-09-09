@@ -43,11 +43,13 @@ class DistanceDependentProbabilityConnector():
         self.n_connections = n_connections
 
 class ConvolutionConnector():
-    def __init__(self, weights, delays=1, displacement_x = 0, displacement_y = 0, safe=True, verbose=False):
+    def __init__(self, weights, delays=1, displacement_x = 0, displacement_y = 0, kernel_size_x = 0, kernel_size_y = 0, safe=True, verbose=False):
         self.__name__ = "ConvolutionConnector"
         self.weights = weights
         self.delays = delays
         self.displacement_x = displacement_x
         self.displacement_y = displacement_y
-        pass
+        self.kernel_size_x = kernel_size_x
+        self.kernel_size_y = kernel_size_y                
+        
         

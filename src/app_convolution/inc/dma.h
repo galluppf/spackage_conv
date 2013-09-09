@@ -12,7 +12,7 @@ typedef struct
 typedef struct
 {
     uint core_id;
-    uint core_mask;
+    uint kernel_geometry;       // x << 16 | y
     int * kernel_block;
     uint displacement;
     uint row_size;         //synaptic weight row length

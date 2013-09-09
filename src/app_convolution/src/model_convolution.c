@@ -24,20 +24,24 @@ void process_incoming_packets(uint null0, uint null1) {
         int * kernel = NULL;
         ushort kernel_size = 0;
         uint kernel_displacement;
+        uint kernel_geometry;
         
         io_printf(IO_STD, "Time: %d key: 0x%x\n", spin1_get_simulation_time(), key);
         for(uint i = 0; synapse_lookup[i].core_id != 0xffffffff; i++)
         {            
-            if((synapse_lookup[i].core_mask & key) == synapse_lookup[i].core_id)
+            if((LOOKUP_MASK & key) == synapse_lookup[i].core_id)
             {
                 kernel = (int *) synapse_lookup[i].kernel_block;
                 kernel_size = synapse_lookup[i].row_size;
                 kernel_displacement = synapse_lookup[i].displacement;
+                kernel_geometry = synapse_lookup[i].kernel_geometry;
             }
         }
         
         
-        io_printf(IO_STD, "K: disp: (%d, %d) ", kernel_displacement & 0xFFFF, (kernel_displacement >> 16) & 0xFFFF);
+        io_printf(IO_STD, "K: disp: (%d, %d) s: (%d, %d) ", 
+            kernel_displacement & 0xFFFF, (kernel_displacement >> 16) & 0xFFFF,
+            kernel_geometry & 0xFFFF, (kernel_geometry >> 16) & 0xFFFF);
         for (uint j = 0; j < kernel_size; j++) 
         {
             io_printf(IO_STD, "%d ", kernel[j]);
@@ -133,7 +137,7 @@ void configure_recording_space()
     for (uint i = 0; synapse_lookup[i].core_id != 0xffffffff; i++)
     {
         io_printf(IO_STD, "key 0x%x size %d pointer 0x%x\n",
-            synapse_lookup[i].core_mask,
+            LOOKUP_MASK,
             synapse_lookup[i].row_size,
             synapse_lookup[i].kernel_block);
     
@@ -144,8 +148,8 @@ void configure_recording_space()
             
         synapse_lookup[i].kernel_block = tcm_address;
 
-        io_printf(IO_STD, "key 0x%x size %d pointer 0x%x\n",
-            synapse_lookup[i].core_mask,
+        io_printf(IO_STD, "mask 0x%x size %d pointer 0x%x\n",
+            LOOKUP_MASK,
             synapse_lookup[i].row_size,
             synapse_lookup[i].kernel_block);
 

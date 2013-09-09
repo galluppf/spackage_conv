@@ -676,6 +676,8 @@ class Projection():
         if isinstance(self.method, connectors.ConvolutionConnector):   
             self.parameters['displacement_x'] = self.method.displacement_x
             self.parameters['displacement_y'] = self.method.displacement_y
+            self.parameters['kernel_size_x'] = self.method.kernel_size_x
+            self.parameters['kernel_size_y'] = self.method.kernel_size_y
         
         # checking if a rng has been passed. if so i will be parsed as an entry 'rng':'rng_id' into the parameters
         if self.rng != None:

@@ -109,8 +109,9 @@ def compute_sdram_block(c, db):
             # appends the info needed to generate the lookup table entry
             lookup_data.append({'memory_pointer':memory_pointer, 
                                 'synaptic_row_length':len(parameters['weights']), 
-                                'mask': eval(presynaptic_population['mask']),
-                                'r_key': r_key,
+#                                'mask': eval(presynaptic_population['mask']),
+                                'mask'  : parameters['kernel_size_y'] | (parameters['kernel_size_x'] << 16),
+                                'r_key' : r_key,
                                 'displacement': parameters['displacement_y'] | (parameters['displacement_x'] << 16)})
 
             weights = [ p*1 for p in parameters['weights'] ]

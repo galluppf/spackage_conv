@@ -11,7 +11,7 @@
 #define IZK_CONST_3             (140*P1)
 #define IZK_THRESHOLD           (30)
 
-
+uint LOOKUP_MASK = 0xFFFFF800;
 
 typedef struct
 {
