@@ -125,8 +125,8 @@ void configure_app_frame()
     dma_pipeline.flip = 0;
 /*    dma_pipeline.row_size_max = sizeof(synaptic_row_t) + sizeof(uint) * app_data.synaptic_row_length;*/
     dma_pipeline.row_size_max = sizeof(synaptic_row_t) + sizeof(uint) * app_data.total_neurons;
-    dma_pipeline.cache[0] = (synaptic_row_t *) spin1_malloc(dma_pipeline.row_size_max);
-    dma_pipeline.cache[1] = (synaptic_row_t *) spin1_malloc(dma_pipeline.row_size_max);
+    dma_pipeline.cache[0] = NULL;
+    dma_pipeline.cache[1] = NULL;
     dma_pipeline.synapse_lookup_address[0] = dma_pipeline.synapse_lookup_address[1] = NULL;
     dma_pipeline.row_size[0] = dma_pipeline.row_size[1] = 0;
 

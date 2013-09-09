@@ -23,18 +23,21 @@ void process_incoming_packets(uint null0, uint null1) {
         
         int * kernel = NULL;
         ushort kernel_size = 0;
+        uint kernel_displacement;
         
         io_printf(IO_STD, "Time: %d key: 0x%x\n", spin1_get_simulation_time(), key);
         for(uint i = 0; synapse_lookup[i].core_id != 0xffffffff; i++)
         {            
             if((synapse_lookup[i].core_mask & key) == synapse_lookup[i].core_id)
             {
-                kernel = (int *) synapse_lookup[i].synaptic_block;
+                kernel = (int *) synapse_lookup[i].kernel_block;
                 kernel_size = synapse_lookup[i].row_size;
+                kernel_displacement = synapse_lookup[i].displacement;
             }
         }
         
         
+        io_printf(IO_STD, "K: disp: (%d, %d) ", kernel_displacement & 0xFFFF, (kernel_displacement >> 16) & 0xFFFF);
         for (uint j = 0; j < kernel_size; j++) 
         {
             io_printf(IO_STD, "%d ", kernel[j]);
@@ -65,23 +68,33 @@ void timer_callback(uint ticks, uint null)
 
     if(ticks == 0)
     {   
-        io_printf(IO_STD, "\nn;v;v_thresh;v_reset;v_rest;tau_refrac;tau_refrac_clock;tau_m\n");
+        io_printf(IO_STD, "\nv_thresh;v_reset;v_rest;tau_refrac;tau_m;size_map_x;size_map_y\n");
 
-        int j = 0;
-        io_printf(IO_STD, "%d;%d;%d;%d;%d;%d;%d;%d\n", 
-                            j, 
-                            neuron[j].v,
-                            neuron[j].v_thresh,
-                            neuron[j].v_reset,
-                            neuron[j].v_rest,
-                            neuron[j].tau_refrac,
-                            neuron[j].tau_refrac_clock,
-                            neuron[j].tau_m                                
-                            );
+        io_printf(IO_STD, "%d;%d;%d;%d;%d;%d;%d\n", 
+                            population[0].v_thresh,
+                            population[0].v_reset,
+                            population[0].v_rest,
+                            population[0].tau_refrac,
+                            population[0].tau_m,
+                            population[0].size_map_x,
+                            population[0].size_map_y
+                            );                    
+
+        io_printf(IO_STD, "\nn;v;time_last_input_spike;time_last_output_spike\n");
+
+        uint j = 0;  // only print neuron 0
+        io_printf(IO_STD, "%d;%d;%d;%d\n", 
+                                j, 
+                                neuron[j].v,
+                                neuron[j].time_last_input_spike,
+                                neuron[j].time_last_output_spike
+                                );
+
+
                             
         io_printf(IO_STD, "start_id: %d, end_id: %d, total_neurons: %d\n", 
                             app_data.offset, 
-                            app_data.offset + population[0].num_neurons,
+                            app_data.offset + population[0].num_neurons - 1,     // id start from 0, hence -1
                             app_data.population_size);
     }
         
@@ -122,19 +135,19 @@ void configure_recording_space()
         io_printf(IO_STD, "key 0x%x size %d pointer 0x%x\n",
             synapse_lookup[i].core_mask,
             synapse_lookup[i].row_size,
-            synapse_lookup[i].synaptic_block);
+            synapse_lookup[i].kernel_block);
     
         int * tcm_address = (int *) spin1_malloc(synapse_lookup[i].row_size * 4);
-        int * sdram_address = (int *) synapse_lookup[i].synaptic_block;
+        int * sdram_address = (int *) synapse_lookup[i].kernel_block;
         for (uint j = 0; j < synapse_lookup[i].row_size; j++)
             tcm_address[j] = sdram_address[j];
             
-        synapse_lookup[i].synaptic_block = (int *) tcm_address;
+        synapse_lookup[i].kernel_block = tcm_address;
 
         io_printf(IO_STD, "key 0x%x size %d pointer 0x%x\n",
             synapse_lookup[i].core_mask,
             synapse_lookup[i].row_size,
-            synapse_lookup[i].synaptic_block);
+            synapse_lookup[i].kernel_block);
 
         for (uint j = 0; j < synapse_lookup[i].row_size; j++) io_printf(IO_STD, "%d ", tcm_address[j]);
         io_printf(IO_STD, "\n");

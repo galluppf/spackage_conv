@@ -110,7 +110,8 @@ def compute_sdram_block(c, db):
             lookup_data.append({'memory_pointer':memory_pointer, 
                                 'synaptic_row_length':len(parameters['weights']), 
                                 'mask': eval(presynaptic_population['mask']),
-                                'r_key': r_key})
+                                'r_key': r_key,
+                                'displacement': parameters['displacement_y'] | (parameters['displacement_x'] << 16)})
 
             weights = [ p*1 for p in parameters['weights'] ]
             out_string += struct.pack('%di' % len(parameters['weights']), *weights)
@@ -136,7 +137,7 @@ def compute_sdram_block(c, db):
                                         l['r_key'],         #   fasc addr
                                         l['mask'],          #   mask
                                         l['memory_pointer'], 
-                                        parameters['displacement_x'] << 16 | parameters['displacement_y'], #   hijack displacement
+                                        l['displacement'], #   hijack displacement
                                         l['synaptic_row_length']
                                         ))
 

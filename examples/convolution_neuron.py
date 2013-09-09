@@ -8,18 +8,18 @@ name = 'convolution'
 n = c.NeuralModel('convolution', 2048, 'app_%s.aplx' % name, generate_sdram_connectivity=c.FALSE)
 
 n.add_parameter('v', param_type = 'i', translation ='int(value)*65536', default=-60.0)
-n.add_parameter('time_last_input_spike', param_type = 'h', translation = 0)
-n.add_parameter('time_last_output_spike', param_type = 'h', translation = 0)
+n.add_parameter('time_last_input_spike', param_type = 'I', translation = 0)
+n.add_parameter('time_last_output_spike', param_type = 'I', translation = 0)
 
-n.add_parameter('tau_m', param_type = 'i', translation = 'int(65536/value)', translate=c.ONE_PER_POPULATION, default=16)
+n.add_parameter('tau_m', param_type = 'I', translation = 'int(65536/value)', translate=c.ONE_PER_POPULATION, default=16)
 n.add_parameter('v_thresh', param_type = 'h', translation = 'int(value)*256', translate=c.ONE_PER_POPULATION, default=-60.0)
 n.add_parameter('v_reset', param_type = 'h', translation = 'int(value)*256', translate=c.ONE_PER_POPULATION, default=-60.0)
 n.add_parameter('v_rest', param_type = 'h', translation = 'int(value)*256', translate=c.ONE_PER_POPULATION, default=-60.0)
 
-n.add_parameter('tau_refrac', param_type = 'h', translation = 'int(value)', translate=c.ONE_PER_POPULATION)
+n.add_parameter('tau_refrac', param_type = 'H', translation = 'int(value)', translate=c.ONE_PER_POPULATION)
 
-n.add_parameter('size_map_x', param_type = 'h', translation = 'int(value)', translate=c.ONE_PER_POPULATION)
-n.add_parameter('size_map_y', param_type = 'h', translation = 'int(value)', translate=c.ONE_PER_POPULATION)
+n.add_parameter('size_map_x', param_type = 'H', translation = 'int(value)', translate=c.ONE_PER_POPULATION)
+n.add_parameter('size_map_y', param_type = 'H', translation = 'int(value)', translate=c.ONE_PER_POPULATION)
 
 for s in ('excitatory', 'inhibitory'):
     n.add_synapse(s)    

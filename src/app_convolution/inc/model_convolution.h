@@ -15,14 +15,9 @@
 
 typedef struct
 {
-    short v;     // int(value)*256
-    short v_thresh;     // int(value)*256
-    short v_reset;     // int(value)*256
-    short v_rest;     // int(value)*256
-    short tau_refrac;     // int(value)
-    short tau_refrac_clock;     // int(value)
-    int tau_m;     // int(65536/value)
-
+    int v;     // int(value)*65536
+    uint time_last_input_spike;
+    uint time_last_output_spike;    
 } neuron_t;
 
 

@@ -6,7 +6,7 @@
 #define INT_MAX                 ( 2147483647) //TODO define programmatically
 #define INT_MIN                 (-2147483648)
 
-#define PSP_BUFFER_SIZE         16
+#define PSP_BUFFER_SIZE         1
 
 
 //NB this will have to be moved into model_x.h as synapse models become more detailed
@@ -25,6 +25,16 @@ typedef struct
     uint null;          // Reserved
     void *neuron;       // Pointer to neuron structures
     psp_buffer_t *psp_buffer;   // Pointer to input buffers for this population
+
+    uint tau_m;         // 65536/tau_m
+
+    short v_thresh;
+    short v_reset;
+    short v_rest;
+    ushort tau_refrac;
+    
+    ushort size_map_x;
+    ushort size_map_y;        
 } population_t;
 
 
