@@ -14,6 +14,7 @@ import pacman
 import os
 import struct
 
+SCALE_WEIGHT = 65536        # Scale of the weight (w*SCALE_WEIGHT). TODO move it to the synaptic_translations
 CONVOLUTIONAL_IMAGE_NAME = 'app_convolution.aplx'   # TODO do more properly with module name
 DEBUG = pacman.pacman_configuration.getboolean('convolution', 'debug')
 SDRAM_BASE = 0x70000000
@@ -114,7 +115,7 @@ def compute_sdram_block(c, db):
                                 'r_key' : r_key,
                                 'displacement': parameters['displacement_y'] | (parameters['displacement_x'] << 16)})
 
-            weights = [ p*1 for p in parameters['weights'] ]
+            weights = [ p*SCALE_WEIGHT for p in parameters['weights'] ]
             out_string += struct.pack('%di' % len(parameters['weights']), *weights)
 
     

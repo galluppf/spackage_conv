@@ -676,10 +676,10 @@ f5007ee0 l       *ABS*	00000000 RST_BLOCK_BASE
 00002044 g     F RO_DATA	00000010 irq_enable
 004002e0 g     O ZI_DATA	00000004 record_spikes
 000003e4 g     F RO_DATA	000000f0 sark_setup
-00003a0c g     F RO_DATA	000000bc timer_callback
+00003a0c g     F RO_DATA	000000ac timer_callback
 0000203c g     F RO_DATA	00000008 spin1_mode_restore
 0000202c g     F RO_DATA	00000010 spin1_irq_disable
-00003ac8 g     F RO_DATA	00000110 configure_recording_space
+00003ab8 g     F RO_DATA	00000110 configure_recording_space
 000035f8 g     F RO_DATA	00000048 sdp_packet_callback
 00002350 g     F RO_DATA	000000c8 spin1_schedule_callback
 000035c0 g     F RO_DATA	00000038 input_spikes
@@ -714,7 +714,7 @@ f5007ee0 l       *ABS*	00000000 RST_BLOCK_BASE
 00001840 g     F RO_DATA	00000024 spin1_flush_tx_packet_queue
 000021fc g     F RO_DATA	00000038 spin1_kill
 00001290 g     F RO_DATA	00000010 spin1_get_simulation_time
-00003cd0 g       *ABS*	00000000 RW_FROM
+00003cc0 g       *ABS*	00000000 RW_FROM
 000004d4 g     F RO_DATA	00000154 spin1_send_sdp_msg
 000027fc g     F RO_DATA	00000104 io_put_int
 0000207c g     F RO_DATA	00000020 spin1_get_id
@@ -779,7 +779,7 @@ f5007ee0 l       *ABS*	00000000 RST_BLOCK_BASE
 000001dc g     F RO_DATA	00000000 div10
 00003a08 g     F RO_DATA	00000004 handle_sdp_msg
 0000206c g     F RO_DATA	00000010 spin1_int_disable
-00003ca0 g       *ABS*	00000000 RO_LENGTH
+00003c90 g       *ABS*	00000000 RO_LENGTH
 00000ae0 g       *ABS*	00000000 ZI_LENGTH
 00000688 g     F RO_DATA	00000394 cpu_int_c
 00000144 g     F RO_DATA	00000000 copy_msg
@@ -793,10 +793,10 @@ Disassembly of section APLX:
    0:	00000002 	.word	0x00000002
    4:	00000000 	.word	0x00000000
    8:	00000040 	.word	0x00000040
-   c:	00003ca0 	.word	0x00003ca0
+   c:	00003c90 	.word	0x00003c90
   10:	00000002 	.word	0x00000002
   14:	00400000 	.word	0x00400000
-  18:	00003cd0 	.word	0x00003cd0
+  18:	00003cc0 	.word	0x00003cc0
   1c:	00000018 	.word	0x00000018
   20:	00000003 	.word	0x00000003
   24:	00400018 	.word	0x00400018
@@ -4177,7 +4177,7 @@ Disassembly of section RO_DATA:
     340c:	e283301c 	add	r3, r3, #28
     3410:	e152000e 	cmp	r2, lr
     3414:	1afffff6 	bne	33f4 <configure_app_frame+0xb4>
-    3418:	eb0001aa 	bl	3ac8 <configure_recording_space>
+    3418:	eb0001a6 	bl	3ab8 <configure_recording_space>
     341c:	e8bd80f8 	pop	{r3, r4, r5, r6, r7, pc}
     3420:	004002d0 	.word	0x004002d0
     3424:	004002ac 	.word	0x004002ac
@@ -4373,7 +4373,7 @@ Disassembly of section RO_DATA:
     36e4:	004002ac 	.word	0x004002ac
     36e8:	fffffeea 	.word	0xfffffeea
     36ec:	fffffee0 	.word	0xfffffee0
-    36f0:	00003bd8 	.word	0x00003bd8
+    36f0:	00003bc8 	.word	0x00003bc8
 
 000036f4 <send_out_value>:
     36f4:	e92d41f0 	push	{r4, r5, r6, r7, r8, lr}
@@ -4527,12 +4527,12 @@ Disassembly of section RO_DATA:
     3924:	ebfffcd0 	bl	2c6c <io_printf>
     3928:	ebfff827 	bl	19cc <spin1_start>
     392c:	e8bd8010 	pop	{r4, pc}
-    3930:	00003bec 	.word	0x00003bec
+    3930:	00003bdc 	.word	0x00003bdc
     3934:	74220000 	.word	0x74220000
     3938:	00003884 	.word	0x00003884
     393c:	00003a0c 	.word	0x00003a0c
     3940:	000035f8 	.word	0x000035f8
-    3944:	00003c14 	.word	0x00003c14
+    3944:	00003c04 	.word	0x00003c04
 
 00003948 <shift_lfsr>:
     3948:	e2103001 	ands	r3, r0, #1
@@ -4590,170 +4590,166 @@ Disassembly of section RO_DATA:
     3a08:	e12fff1e 	bx	lr
 
 00003a0c <timer_callback>:
-    3a0c:	e92d4010 	push	{r4, lr}
+    3a0c:	e92d4070 	push	{r4, r5, r6, lr}
     3a10:	e24dd008 	sub	sp, sp, #8
-    3a14:	e1a04000 	mov	r4, r0
-    3a18:	e3500001 	cmp	r0, #1
-    3a1c:	9a00000a 	bls	3a4c <timer_callback+0x40>
-    3a20:	e59f3084 	ldr	r3, [pc, #132]	; 3aac <timer_callback+0xa0>
-    3a24:	e5931000 	ldr	r1, [r3]
-    3a28:	e59f3080 	ldr	r3, [pc, #128]	; 3ab0 <timer_callback+0xa4>
-    3a2c:	e593200c 	ldr	r2, [r3, #12]
-    3a30:	e59f307c 	ldr	r3, [pc, #124]	; 3ab4 <timer_callback+0xa8>
-    3a34:	e5933000 	ldr	r3, [r3]
-    3a38:	e1a03103 	lsl	r3, r3, #2
-    3a3c:	e58d3000 	str	r3, [sp]
-    3a40:	e3e00002 	mvn	r0, #2
-    3a44:	e3a03000 	mov	r3, #0
-    3a48:	ebfff726 	bl	16e8 <spin1_dma_transfer>
-    3a4c:	e59f3058 	ldr	r3, [pc, #88]	; 3aac <timer_callback+0xa0>
-    3a50:	e59f205c 	ldr	r2, [pc, #92]	; 3ab4 <timer_callback+0xa8>
-    3a54:	e5921000 	ldr	r1, [r2]
-    3a58:	e5932000 	ldr	r2, [r3]
-    3a5c:	e0822101 	add	r2, r2, r1, lsl #2
-    3a60:	e5832000 	str	r2, [r3]
-    3a64:	e3540001 	cmp	r4, #1
-    3a68:	1a000002 	bne	3a78 <timer_callback+0x6c>
-    3a6c:	e3a00000 	mov	r0, #0
-    3a70:	e59f1040 	ldr	r1, [pc, #64]	; 3ab8 <timer_callback+0xac>
-    3a74:	ebfffc7c 	bl	2c6c <io_printf>
-    3a78:	e59f303c 	ldr	r3, [pc, #60]	; 3abc <timer_callback+0xb0>
-    3a7c:	e5933000 	ldr	r3, [r3]
-    3a80:	e2433001 	sub	r3, r3, #1
-    3a84:	e1540003 	cmp	r4, r3
-    3a88:	3a000005 	bcc	3aa4 <timer_callback+0x98>
-    3a8c:	e3a00000 	mov	r0, #0
-    3a90:	e59f1028 	ldr	r1, [pc, #40]	; 3ac0 <timer_callback+0xb4>
-    3a94:	e59f3028 	ldr	r3, [pc, #40]	; 3ac4 <timer_callback+0xb8>
-    3a98:	e5932000 	ldr	r2, [r3]
-    3a9c:	ebfffc72 	bl	2c6c <io_printf>
-    3aa0:	ebfff6fd 	bl	169c <spin1_stop>
-    3aa4:	e28dd008 	add	sp, sp, #8
-    3aa8:	e8bd8010 	pop	{r4, pc}
-    3aac:	004002f4 	.word	0x004002f4
-    3ab0:	004002d0 	.word	0x004002d0
-    3ab4:	004002ec 	.word	0x004002ec
-    3ab8:	00003c40 	.word	0x00003c40
-    3abc:	004002ac 	.word	0x004002ac
-    3ac0:	00003c54 	.word	0x00003c54
-    3ac4:	00400018 	.word	0x00400018
+    3a14:	e1a06000 	mov	r6, r0
+    3a18:	e59f407c 	ldr	r4, [pc, #124]	; 3a9c <timer_callback+0x90>
+    3a1c:	e5941000 	ldr	r1, [r4]
+    3a20:	e59f3078 	ldr	r3, [pc, #120]	; 3aa0 <timer_callback+0x94>
+    3a24:	e593200c 	ldr	r2, [r3, #12]
+    3a28:	e59f5074 	ldr	r5, [pc, #116]	; 3aa4 <timer_callback+0x98>
+    3a2c:	e5953000 	ldr	r3, [r5]
+    3a30:	e1a03103 	lsl	r3, r3, #2
+    3a34:	e58d3000 	str	r3, [sp]
+    3a38:	e3e00002 	mvn	r0, #2
+    3a3c:	e3a03000 	mov	r3, #0
+    3a40:	ebfff728 	bl	16e8 <spin1_dma_transfer>
+    3a44:	e5952000 	ldr	r2, [r5]
+    3a48:	e5943000 	ldr	r3, [r4]
+    3a4c:	e0833102 	add	r3, r3, r2, lsl #2
+    3a50:	e5843000 	str	r3, [r4]
+    3a54:	e3560001 	cmp	r6, #1
+    3a58:	1a000002 	bne	3a68 <timer_callback+0x5c>
+    3a5c:	e3a00000 	mov	r0, #0
+    3a60:	e59f1040 	ldr	r1, [pc, #64]	; 3aa8 <timer_callback+0x9c>
+    3a64:	ebfffc80 	bl	2c6c <io_printf>
+    3a68:	e59f303c 	ldr	r3, [pc, #60]	; 3aac <timer_callback+0xa0>
+    3a6c:	e5933000 	ldr	r3, [r3]
+    3a70:	e2433001 	sub	r3, r3, #1
+    3a74:	e1560003 	cmp	r6, r3
+    3a78:	3a000005 	bcc	3a94 <timer_callback+0x88>
+    3a7c:	e3a00000 	mov	r0, #0
+    3a80:	e59f1028 	ldr	r1, [pc, #40]	; 3ab0 <timer_callback+0xa4>
+    3a84:	e59f3028 	ldr	r3, [pc, #40]	; 3ab4 <timer_callback+0xa8>
+    3a88:	e5932000 	ldr	r2, [r3]
+    3a8c:	ebfffc76 	bl	2c6c <io_printf>
+    3a90:	ebfff701 	bl	169c <spin1_stop>
+    3a94:	e28dd008 	add	sp, sp, #8
+    3a98:	e8bd8070 	pop	{r4, r5, r6, pc}
+    3a9c:	004002f4 	.word	0x004002f4
+    3aa0:	004002d0 	.word	0x004002d0
+    3aa4:	004002ec 	.word	0x004002ec
+    3aa8:	00003c30 	.word	0x00003c30
+    3aac:	004002ac 	.word	0x004002ac
+    3ab0:	00003c44 	.word	0x00003c44
+    3ab4:	00400018 	.word	0x00400018
 
-00003ac8 <configure_recording_space>:
-    3ac8:	e92d41f0 	push	{r4, r5, r6, r7, r8, lr}
-    3acc:	e59f40ec 	ldr	r4, [pc, #236]	; 3bc0 <configure_recording_space+0xf8>
-    3ad0:	e5942018 	ldr	r2, [r4, #24]
-    3ad4:	e2822fea 	add	r2, r2, #936	; 0x3a8
-    3ad8:	e2822001 	add	r2, r2, #1
-    3adc:	e1a02a82 	lsl	r2, r2, #21
-    3ae0:	e59f30dc 	ldr	r3, [pc, #220]	; 3bc4 <configure_recording_space+0xfc>
-    3ae4:	e5832000 	str	r2, [r3]
-    3ae8:	e3a00000 	mov	r0, #0
-    3aec:	e59f10d4 	ldr	r1, [pc, #212]	; 3bc8 <configure_recording_space+0x100>
-    3af0:	ebfffc5d 	bl	2c6c <io_printf>
-    3af4:	e5940010 	ldr	r0, [r4, #16]
-    3af8:	e2402001 	sub	r2, r0, #1
-    3afc:	e1a022a2 	lsr	r2, r2, #5
-    3b00:	e2822001 	add	r2, r2, #1
-    3b04:	e59f30c0 	ldr	r3, [pc, #192]	; 3bcc <configure_recording_space+0x104>
-    3b08:	e5832000 	str	r2, [r3]
-    3b0c:	e59f50bc 	ldr	r5, [pc, #188]	; 3bd0 <configure_recording_space+0x108>
-    3b10:	e594300c 	ldr	r3, [r4, #12]
-    3b14:	e5853000 	str	r3, [r5]
-    3b18:	ebfff9c5 	bl	2234 <spin1_malloc>
-    3b1c:	e59f30b0 	ldr	r3, [pc, #176]	; 3bd4 <configure_recording_space+0x10c>
-    3b20:	e5830000 	str	r0, [r3]
-    3b24:	e5953000 	ldr	r3, [r5]
-    3b28:	e3530000 	cmp	r3, #0
-    3b2c:	1a000012 	bne	3b7c <configure_recording_space+0xb4>
-    3b30:	e8bd81f0 	pop	{r4, r5, r6, r7, r8, pc}
-    3b34:	e596c000 	ldr	ip, [r6]
-    3b38:	e5922000 	ldr	r2, [r2]
-    3b3c:	e1832002 	orr	r2, r3, r2
-    3b40:	e18c20b1 	strh	r2, [ip, r1]
-    3b44:	e2800001 	add	r0, r0, #1
-    3b48:	e2833001 	add	r3, r3, #1
-    3b4c:	e5942004 	ldr	r2, [r4, #4]
-    3b50:	e0822005 	add	r2, r2, r5
-    3b54:	e2811002 	add	r1, r1, #2
-    3b58:	e592c008 	ldr	ip, [r2, #8]
-    3b5c:	e153000c 	cmp	r3, ip
-    3b60:	3afffff3 	bcc	3b34 <configure_recording_space+0x6c>
-    3b64:	e2877001 	add	r7, r7, #1
-    3b68:	e1a02007 	mov	r2, r7
-    3b6c:	e5943000 	ldr	r3, [r4]
-    3b70:	e1530007 	cmp	r3, r7
-    3b74:	8a000006 	bhi	3b94 <configure_recording_space+0xcc>
-    3b78:	e8bd81f0 	pop	{r4, r5, r6, r7, r8, pc}
-    3b7c:	e3a02000 	mov	r2, #0
-    3b80:	e1a07002 	mov	r7, r2
-    3b84:	e1a00002 	mov	r0, r2
-    3b88:	e59f4040 	ldr	r4, [pc, #64]	; 3bd0 <configure_recording_space+0x108>
-    3b8c:	e1a08002 	mov	r8, r2
-    3b90:	e59f603c 	ldr	r6, [pc, #60]	; 3bd4 <configure_recording_space+0x10c>
-    3b94:	e0622182 	rsb	r2, r2, r2, lsl #3
-    3b98:	e1a02102 	lsl	r2, r2, #2
-    3b9c:	e1a05002 	mov	r5, r2
-    3ba0:	e5943004 	ldr	r3, [r4, #4]
-    3ba4:	e0832002 	add	r2, r3, r2
-    3ba8:	e5923008 	ldr	r3, [r2, #8]
-    3bac:	e3530000 	cmp	r3, #0
-    3bb0:	11a01080 	lslne	r1, r0, #1
-    3bb4:	11a03008 	movne	r3, r8
-    3bb8:	1affffdd 	bne	3b34 <configure_recording_space+0x6c>
-    3bbc:	eaffffe8 	b	3b64 <configure_recording_space+0x9c>
-    3bc0:	004002ac 	.word	0x004002ac
-    3bc4:	004002f4 	.word	0x004002f4
-    3bc8:	00003c84 	.word	0x00003c84
-    3bcc:	004002ec 	.word	0x004002ec
-    3bd0:	0040001c 	.word	0x0040001c
-    3bd4:	004002f0 	.word	0x004002f0
-    3bd8:	646e6573 	.word	0x646e6573
-    3bdc:	20676e69 	.word	0x20676e69
-    3be0:	636e7973 	.word	0x636e7973
-    3be4:	69707320 	.word	0x69707320
-    3be8:	000a656b 	.word	0x000a656b
-    3bec:	6c6c6548 	.word	0x6c6c6548
-    3bf0:	57202c6f 	.word	0x57202c6f
-    3bf4:	646c726f 	.word	0x646c726f
-    3bf8:	6f420a21 	.word	0x6f420a21
-    3bfc:	6e69746f 	.word	0x6e69746f
-    3c00:	70612067 	.word	0x70612067
-    3c04:	63696c70 	.word	0x63696c70
-    3c08:	6f697461 	.word	0x6f697461
-    3c0c:	2e2e2e6e 	.word	0x2e2e2e6e
-    3c10:	0000000a 	.word	0x0000000a
-    3c14:	6c707041 	.word	0x6c707041
-    3c18:	74616369 	.word	0x74616369
-    3c1c:	206e6f69 	.word	0x206e6f69
-    3c20:	746f6f62 	.word	0x746f6f62
-    3c24:	0a216465 	.word	0x0a216465
-    3c28:	72617453 	.word	0x72617453
-    3c2c:	676e6974 	.word	0x676e6974
-    3c30:	6d697320 	.word	0x6d697320
-    3c34:	74616c75 	.word	0x74616c75
-    3c38:	2e6e6f69 	.word	0x2e6e6f69
-    3c3c:	000a2e2e 	.word	0x000a2e2e
-    3c40:	6b697053 	.word	0x6b697053
-    3c44:	6f732065 	.word	0x6f732065
-    3c48:	65637275 	.word	0x65637275
-    3c4c:	646f6d20 	.word	0x646f6d20
-    3c50:	000a6c65 	.word	0x000a6c65
-    3c54:	756d6953 	.word	0x756d6953
-    3c58:	6974616c 	.word	0x6974616c
-    3c5c:	63206e6f 	.word	0x63206e6f
-    3c60:	6c706d6f 	.word	0x6c706d6f
-    3c64:	20657465 	.word	0x20657465
-    3c68:	6572202d 	.word	0x6572202d
-    3c6c:	76696563 	.word	0x76696563
-    3c70:	25206465 	.word	0x25206465
-    3c74:	64732064 	.word	0x64732064
-    3c78:	61702070 	.word	0x61702070
-    3c7c:	74656b63 	.word	0x74656b63
-    3c80:	000a2e73 	.word	0x000a2e73
-    3c84:	64616f4c 	.word	0x64616f4c
-    3c88:	20676e69 	.word	0x20676e69
-    3c8c:	6b697073 	.word	0x6b697073
-    3c90:	66207365 	.word	0x66207365
-    3c94:	3a6d6f72 	.word	0x3a6d6f72
-    3c98:	0a782520 	.word	0x0a782520
-    3c9c:	00000000 	.word	0x00000000
+00003ab8 <configure_recording_space>:
+    3ab8:	e92d41f0 	push	{r4, r5, r6, r7, r8, lr}
+    3abc:	e59f40ec 	ldr	r4, [pc, #236]	; 3bb0 <configure_recording_space+0xf8>
+    3ac0:	e5942018 	ldr	r2, [r4, #24]
+    3ac4:	e2822fea 	add	r2, r2, #936	; 0x3a8
+    3ac8:	e2822001 	add	r2, r2, #1
+    3acc:	e1a02a82 	lsl	r2, r2, #21
+    3ad0:	e59f30dc 	ldr	r3, [pc, #220]	; 3bb4 <configure_recording_space+0xfc>
+    3ad4:	e5832000 	str	r2, [r3]
+    3ad8:	e3a00000 	mov	r0, #0
+    3adc:	e59f10d4 	ldr	r1, [pc, #212]	; 3bb8 <configure_recording_space+0x100>
+    3ae0:	ebfffc61 	bl	2c6c <io_printf>
+    3ae4:	e5940010 	ldr	r0, [r4, #16]
+    3ae8:	e2402001 	sub	r2, r0, #1
+    3aec:	e1a022a2 	lsr	r2, r2, #5
+    3af0:	e2822001 	add	r2, r2, #1
+    3af4:	e59f30c0 	ldr	r3, [pc, #192]	; 3bbc <configure_recording_space+0x104>
+    3af8:	e5832000 	str	r2, [r3]
+    3afc:	e59f50bc 	ldr	r5, [pc, #188]	; 3bc0 <configure_recording_space+0x108>
+    3b00:	e594300c 	ldr	r3, [r4, #12]
+    3b04:	e5853000 	str	r3, [r5]
+    3b08:	ebfff9c9 	bl	2234 <spin1_malloc>
+    3b0c:	e59f30b0 	ldr	r3, [pc, #176]	; 3bc4 <configure_recording_space+0x10c>
+    3b10:	e5830000 	str	r0, [r3]
+    3b14:	e5953000 	ldr	r3, [r5]
+    3b18:	e3530000 	cmp	r3, #0
+    3b1c:	1a000012 	bne	3b6c <configure_recording_space+0xb4>
+    3b20:	e8bd81f0 	pop	{r4, r5, r6, r7, r8, pc}
+    3b24:	e596c000 	ldr	ip, [r6]
+    3b28:	e5922000 	ldr	r2, [r2]
+    3b2c:	e1832002 	orr	r2, r3, r2
+    3b30:	e18c20b1 	strh	r2, [ip, r1]
+    3b34:	e2800001 	add	r0, r0, #1
+    3b38:	e2833001 	add	r3, r3, #1
+    3b3c:	e5942004 	ldr	r2, [r4, #4]
+    3b40:	e0822005 	add	r2, r2, r5
+    3b44:	e2811002 	add	r1, r1, #2
+    3b48:	e592c008 	ldr	ip, [r2, #8]
+    3b4c:	e153000c 	cmp	r3, ip
+    3b50:	3afffff3 	bcc	3b24 <configure_recording_space+0x6c>
+    3b54:	e2877001 	add	r7, r7, #1
+    3b58:	e1a02007 	mov	r2, r7
+    3b5c:	e5943000 	ldr	r3, [r4]
+    3b60:	e1530007 	cmp	r3, r7
+    3b64:	8a000006 	bhi	3b84 <configure_recording_space+0xcc>
+    3b68:	e8bd81f0 	pop	{r4, r5, r6, r7, r8, pc}
+    3b6c:	e3a02000 	mov	r2, #0
+    3b70:	e1a07002 	mov	r7, r2
+    3b74:	e1a00002 	mov	r0, r2
+    3b78:	e59f4040 	ldr	r4, [pc, #64]	; 3bc0 <configure_recording_space+0x108>
+    3b7c:	e1a08002 	mov	r8, r2
+    3b80:	e59f603c 	ldr	r6, [pc, #60]	; 3bc4 <configure_recording_space+0x10c>
+    3b84:	e0622182 	rsb	r2, r2, r2, lsl #3
+    3b88:	e1a02102 	lsl	r2, r2, #2
+    3b8c:	e1a05002 	mov	r5, r2
+    3b90:	e5943004 	ldr	r3, [r4, #4]
+    3b94:	e0832002 	add	r2, r3, r2
+    3b98:	e5923008 	ldr	r3, [r2, #8]
+    3b9c:	e3530000 	cmp	r3, #0
+    3ba0:	11a01080 	lslne	r1, r0, #1
+    3ba4:	11a03008 	movne	r3, r8
+    3ba8:	1affffdd 	bne	3b24 <configure_recording_space+0x6c>
+    3bac:	eaffffe8 	b	3b54 <configure_recording_space+0x9c>
+    3bb0:	004002ac 	.word	0x004002ac
+    3bb4:	004002f4 	.word	0x004002f4
+    3bb8:	00003c74 	.word	0x00003c74
+    3bbc:	004002ec 	.word	0x004002ec
+    3bc0:	0040001c 	.word	0x0040001c
+    3bc4:	004002f0 	.word	0x004002f0
+    3bc8:	646e6573 	.word	0x646e6573
+    3bcc:	20676e69 	.word	0x20676e69
+    3bd0:	636e7973 	.word	0x636e7973
+    3bd4:	69707320 	.word	0x69707320
+    3bd8:	000a656b 	.word	0x000a656b
+    3bdc:	6c6c6548 	.word	0x6c6c6548
+    3be0:	57202c6f 	.word	0x57202c6f
+    3be4:	646c726f 	.word	0x646c726f
+    3be8:	6f420a21 	.word	0x6f420a21
+    3bec:	6e69746f 	.word	0x6e69746f
+    3bf0:	70612067 	.word	0x70612067
+    3bf4:	63696c70 	.word	0x63696c70
+    3bf8:	6f697461 	.word	0x6f697461
+    3bfc:	2e2e2e6e 	.word	0x2e2e2e6e
+    3c00:	0000000a 	.word	0x0000000a
+    3c04:	6c707041 	.word	0x6c707041
+    3c08:	74616369 	.word	0x74616369
+    3c0c:	206e6f69 	.word	0x206e6f69
+    3c10:	746f6f62 	.word	0x746f6f62
+    3c14:	0a216465 	.word	0x0a216465
+    3c18:	72617453 	.word	0x72617453
+    3c1c:	676e6974 	.word	0x676e6974
+    3c20:	6d697320 	.word	0x6d697320
+    3c24:	74616c75 	.word	0x74616c75
+    3c28:	2e6e6f69 	.word	0x2e6e6f69
+    3c2c:	000a2e2e 	.word	0x000a2e2e
+    3c30:	6b697053 	.word	0x6b697053
+    3c34:	6f732065 	.word	0x6f732065
+    3c38:	65637275 	.word	0x65637275
+    3c3c:	646f6d20 	.word	0x646f6d20
+    3c40:	000a6c65 	.word	0x000a6c65
+    3c44:	756d6953 	.word	0x756d6953
+    3c48:	6974616c 	.word	0x6974616c
+    3c4c:	63206e6f 	.word	0x63206e6f
+    3c50:	6c706d6f 	.word	0x6c706d6f
+    3c54:	20657465 	.word	0x20657465
+    3c58:	6572202d 	.word	0x6572202d
+    3c5c:	76696563 	.word	0x76696563
+    3c60:	25206465 	.word	0x25206465
+    3c64:	64732064 	.word	0x64732064
+    3c68:	61702070 	.word	0x61702070
+    3c6c:	74656b63 	.word	0x74656b63
+    3c70:	000a2e73 	.word	0x000a2e73
+    3c74:	64616f4c 	.word	0x64616f4c
+    3c78:	20676e69 	.word	0x20676e69
+    3c7c:	6b697073 	.word	0x6b697073
+    3c80:	66207365 	.word	0x66207365
+    3c84:	3a6d6f72 	.word	0x3a6d6f72
+    3c88:	0a782520 	.word	0x0a782520
+    3c8c:	00000000 	.word	0x00000000

@@ -87,6 +87,7 @@ void timer_callback(uint ticks, uint null)
         io_printf(IO_STD, "\nn;v;time_last_input_spike;time_last_output_spike\n");
 
         uint j = 0;  // only print neuron 0
+        for (j = 0; j < 20; j++)
         io_printf(IO_STD, "%d;%d;%d;%d\n", 
                                 j, 
                                 neuron[j].v,

@@ -28,10 +28,10 @@ typedef struct
 
     uint tau_m;         // 65536/tau_m
 
-    short v_thresh;
-    short v_reset;
-    short v_rest;
-    ushort tau_refrac;
+    int v_thresh;
+    int v_reset;
+    int v_rest;
+    uint tau_refrac;
     
     ushort size_map_x;
     ushort size_map_y;        

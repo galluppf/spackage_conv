@@ -563,23 +563,25 @@ void* input_thread_SDP (void *ptr)
 
 //                short neuron_id = (scanptr->data[0]-0x800) & (XDIMENSIONS*YDIMENSIONS-1);       // Data is "flat", not related to core ID nor Chip X/Y
 
-                
-                short neuron_id = ( (scanptr->data[0]+ID_OFFSET)%0x800+
-                                    ((scanptr->data[0]+ID_OFFSET)/0x800*N_PER_PROC)) & (XDIMENSIONS*YDIMENSIONS-1);       // trying hack for non 2048 populations
-//                short neuron_id = ( (scanptr->data[0]+ID_OFFSET)%0x800+
-//                                    ((scanptr->data[0]+ID_OFFSET)/0x800*N_PER_PROC));       // trying hack for non 2048 populations
+                for (uint e =0; e < scanptr->arg1; e++)
+                {
+                    short neuron_id = ( (scanptr->data[e]+ID_OFFSET)%0x800+
+                                        ((scanptr->data[e]+ID_OFFSET)/0x800*N_PER_PROC)) & (XDIMENSIONS*YDIMENSIONS-1);       // trying hack for non 2048 populations
+    //                short neuron_id = ( (scanptr->data[0]+ID_OFFSET)%0x800+
+    //                                    ((scanptr->data[0]+ID_OFFSET)/0x800*N_PER_PROC));       // trying hack for non 2048 populations
 
-                
+                    
 
-	            short x_coord_neuron=neuron_id % XDIMENSIONS;                // X coordinate is lower 4 bits [0:3]
-	            short y_coord_neuron=neuron_id / YDIMENSIONS;                // Y coordinate is bits [11:4] ??
+	                short x_coord_neuron=neuron_id % XDIMENSIONS;                // X coordinate is lower 4 bits [0:3]
+	                short y_coord_neuron=neuron_id / YDIMENSIONS;                // Y coordinate is bits [11:4] ??
 
-	            uint pixelid = neuron_id;                           // indexID
+	                uint pixelid = neuron_id;                           // indexID
 
-		    buffered_pdata[pixelid]=x_coord_neuron;             // store 1st pixel ID
-	            pdata_history[updateline][pixelid]=x_coord_neuron;  // replace any data here already
-	            buffered_pdata[pixelid+1]=y_coord_neuron;           // store 2nd pixel ID
-	            pdata_history[updateline][pixelid+1]=y_coord_neuron;// replace any data here already
+		        buffered_pdata[pixelid]=x_coord_neuron;             // store 1st pixel ID
+	                pdata_history[updateline][pixelid]=x_coord_neuron;  // replace any data here already
+	                buffered_pdata[pixelid+1]=y_coord_neuron;           // store 2nd pixel ID
+	                pdata_history[updateline][pixelid+1]=y_coord_neuron;// replace any data here already
+                }
 	          }
 		}
 
