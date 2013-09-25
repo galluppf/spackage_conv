@@ -52,8 +52,8 @@ ifcell.record_v()
 ifcell.record_gsyn()
 ifcell.record()
 
-spike_sourceE.record()
-spike_sourceI.record()
+#spike_sourceE.record()
+#spike_sourceI.record()
 
 p.run(200.0)
 

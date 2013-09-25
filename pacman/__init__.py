@@ -188,6 +188,11 @@ def run_pacman(db, simulator='pynn'):
         routing_patcher.patch_router_for_robot(db)
         routing_patcher.patch_router_for_sensors(db)
 
+    if pacman_configuration.getboolean('routing', 'patch_routing_for_output_board') == True:
+        print "\n[ pacman ] : Patching routing tables for using with the output board"
+        routing_patcher.patch_router_for_output_board(db)
+
+
     
     #### SDRAM
     print "\n[ pacman ] : Synapse generation..."

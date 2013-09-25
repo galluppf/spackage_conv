@@ -21,24 +21,6 @@ sload ../binaries/barrier.dat 74220000
 
 # per core structures
 sload ../binaries/neural_data_0_0_17.dat 74100000
-sload ../binaries/neural_data_0_0_9.dat 74080000
-sload ../binaries/lktbl_0_0_9.dat 74208000
-
-sload ../binaries/neural_data_0_0_8.dat 74070000
-sload ../binaries/lktbl_0_0_8.dat 74207000
-
-sload ../binaries/neural_data_0_0_7.dat 74060000
-sload ../binaries/lktbl_0_0_7.dat 74206000
-
-sload ../binaries/neural_data_0_0_6.dat 74050000
-sload ../binaries/lktbl_0_0_6.dat 74205000
-
-sload ../binaries/neural_data_0_0_5.dat 74040000
-sload ../binaries/lktbl_0_0_5.dat 74204000
-
-sload ../binaries/neural_data_0_0_4.dat 74030000
-sload ../binaries/lktbl_0_0_4.dat 74203000
-
 sload ../binaries/neural_data_0_0_3.dat 74020000
 sload ../binaries/lktbl_0_0_3.dat 74202000
 
@@ -52,53 +34,19 @@ sload ../binaries/lktbl_0_0_1.dat 74200000
 # DTCM (applications)
 sp 0 0 17
 sload ../binaries/app_monitoring.aplx 404000
-sp 0 0 9
-sload ../binaries/app_frame_lif_cond.aplx 404000
-sp 0 0 8
-sload ../binaries/app_convolution.aplx 404000
-sp 0 0 7
-sload ../binaries/app_convolution.aplx 404000
-sp 0 0 6
-sload ../binaries/app_convolution.aplx 404000
-sp 0 0 5
-sload ../binaries/app_convolution.aplx 404000
-sp 0 0 4
-sload ../binaries/app_convolution.aplx 404000
 sp 0 0 3
-sload ../binaries/app_convolution.aplx 404000
-sp 0 0 2
-sload ../binaries/app_convolution.aplx 404000
-sp 0 0 1
-sload ../binaries/app_convolution.aplx 404000
-
-### CHIP 1 0 ###
-sp 1 0 0
-
-# SDRAM data (routing, lookup, synaptic structures, stdp)
-
-# per chip structures
-sload ../binaries/routingtbl_1_0.dat 74210000
-sload ../binaries/SDRAM_1_0.dat 70000000
-sload ../binaries/barrier.dat 74220000
-
-# per core structures
-sload ../binaries/neural_data_1_0_1.dat 74000000
-sload ../binaries/lktbl_1_0_1.dat 74200000
-
-
-# DTCM (applications)
-sp 1 0 1
 sload ../binaries/app_frame_spike_source_array.aplx 404000
+sp 0 0 2
+sload ../binaries/app_frame_spike_source_array.aplx 404000
+sp 0 0 1
+sload ../binaries/app_frame_lif_cond.aplx 404000
 
 ### SpikeSourceArray data structures
 sp 0 0 0
-sp 1 0 0
-sload ../binaries/spike_source_data_1_0_1.dat 75400000
+sload ../binaries/spike_source_data_0_0_2.dat 75600000
+sload ../binaries/spike_source_data_0_0_3.dat 75800000
 @ /media/DOCS/Documents/Progetti/spinnaker_package_convolution/binaries/patched_routing_tables.ybug.dat
 ### Running applications
-sp 1 0 0
-as 404000 2
-
 sp 0 0 0
-as 404000 203fe
+as 404000 2000e
 

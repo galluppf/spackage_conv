@@ -38,6 +38,15 @@ MASK_X_CHIP_ID = 0xFF # 8bits
 OFFSET_Y_CHIP_ID = 16
 MASK_Y_CHIP_ID = 0xFF # 8bits
 
+LINK_E = 1 << 0     # E
+LINK_NE = 1 << 1     # NE
+LINK_N = 1 << 2     # N
+LINK_W = 1 << 3     # W
+LINK_SW = 1 << 4     # SW
+LINK_S = 1 << 5     # S
+OFFSET_CORE_ROUTE = 6
+MONITORING_CORE = 17
+
 DEBUG = False
 RTR_BASE_YBUG   = hex(int(pacman.pacman_configuration.get('routing', 'ROUTER_BASE_MEMORY_ADDRESS'), 16))[2:]
 RTR_BASE        = eval(pacman.pacman_configuration.get('routing', 'ROUTER_BASE_MEMORY_ADDRESS'))
@@ -70,6 +79,7 @@ GET_PROXY_POPULATIONS = """SELECT populations.label, populations.id as populatio
 
 
 file_to_patch = '%s/routingtbl_0_0.dat' % pacman.BINARIES_DIRECTORY
+monitoring_chip_rt_file = '%s/routingtbl_0_0.dat' % pacman.BINARIES_DIRECTORY
 
 def patch_routing_entries_missing_chips(db):    
     ybug_filename = '%s/patched_routing_tables.ybug.dat' % pacman.BINARIES_DIRECTORY
@@ -181,9 +191,10 @@ def patch_router_for_robot(db):
 
     # get all ROBOT_OUTPUT populations    
     procs = db.execute_and_parse_select(GET_COORDINATES_OUTPUT_CORES_ROBOT)
-#    print procs
+    print '[ patch_router_for_robot ] : ', procs
 
     # open the routing table file and get routes
+    global file_to_patch
     routes = read_routing_file(file_to_patch)
     
     new_routes = []
@@ -192,14 +203,33 @@ def patch_router_for_robot(db):
         r_key = 0
         r_key = r_key | ((p['x'] &MASK_X_CHIP_ID) << OFFSET_X_CHIP_ID) | ((p['y'] & MASK_Y_CHIP_ID) << OFFSET_Y_CHIP_ID) | ((p['p'] & MASK_CORE_ID) << OFFSET_CORE_ID)
             
-        new_routes.append({'destination' : 1 << 4, 'mask' : 0xFFFFF800, 'key' : r_key})
+        new_routes.append({'destination' : LINK_SW, 'mask' : 0xFFFFF800, 'key' : r_key})
         
     for r in routes:
         new_routes.append(r)
         
-#    print new_routes
+    if DEBUG:   print '[ patch_router_for_robot ] : ', routes
     
     write_routing_file(file_to_patch, new_routes)
+    
+    # writes to router 0,0
+    
+    for p in procs:
+        r_key = r_key | ((p['x'] &MASK_X_CHIP_ID) << OFFSET_X_CHIP_ID) | ((p['y'] & MASK_Y_CHIP_ID) << OFFSET_Y_CHIP_ID) | ((p['p'] & MASK_CORE_ID) << OFFSET_CORE_ID)
+        if p['x'] > 0 and p['y'] == 0:
+            file_to_patch = '%s/routingtbl_%d_0.dat' % (pacman.BINARIES_DIRECTORY, p['x'])
+            routes = read_routing_file(file_to_patch)
+            new_routes = []
+            
+            new_routes.append({'destination' : LINK_W, 'mask' : 0xFFFFF800, 'key' : r_key})
+            for r in routes:
+                new_routes.append(r)
+
+            write_routing_file(file_to_patch, new_routes)
+        
+        elif p['y'] > 0:
+            raise SystemError('\nERROR!!! output neurons can only be in the first row of chips!')
+            
     
 
 # moved below
@@ -293,27 +323,36 @@ def patch_router_for_sensors(db):
     #
     # cycle all the routers and write back files
     
-    # consuming MGMT packets with key (250, 250)        # FIXME only works in 0,0 - if Proxys are in x > 0 they need to be route west
+    # consuming MGMT packets with key (250, 250)        
     r_key_mgmt = 0
     r_key_mgmt = r_key_mgmt | ((R_KEY_MGMT[X] & MASK_X_CHIP_ID) << OFFSET_X_CHIP_ID) | ((R_KEY_MGMT[Y] & MASK_Y_CHIP_ID) << OFFSET_Y_CHIP_ID)
     for i in range(max_router+1):
         if i ==0:
-            # consume in 0,0
-            routers[0].append({'destination' : 1 << 4, 'mask' : 0xFFFF0000, 'key' : r_key_mgmt})
+            # consume in 0,0, link SW
+            routers[i].append({'destination' : 1 << 4, 'mask' : 0xFFFF0000, 'key' : r_key_mgmt})
         else:
             # route west
-            routers[0].append({'destination' : 4, 'mask' : 0xFFFF0000, 'key' : r_key_mgmt})
+            routers[i].append({'destination' : 1 << 3, 'mask' : 0xFFFF0000, 'key' : r_key_mgmt})
     
     for i in range(max_router+1):
         filename = '%s/routingtbl_%d_0.dat' % (pacman.BINARIES_DIRECTORY, i)
         write_routing_file(filename, routers[i])
 
+def patch_router_for_output_board(db):
+    routes = read_routing_file(monitoring_chip_rt_file)
+    for r in routes:        
+        if r['destination'] & (1 << (OFFSET_CORE_ROUTE + MONITORING_CORE)):
+            r['destination'] = r['destination'] | LINK_W
+            if DEBUG:   print '[ routing_patcher ] : routing key %s WEST'   % hex(r['key'])
+        
+        write_routing_file(monitoring_chip_rt_file, routes)
+    
+
 
 if __name__ == '__main__':
     print "\n----- patching router"
     db = pacman.load_db(sys.argv[1])       # IMPORTS THE DB (it will also load the model libraray by default)
-    routes = patch_router_for_robot(db)
-    patch_router_for_sensors(db)
-        
+#    routes = patch_router_for_robot(db)
+#    patch_router_for_sensors(db)
     # writeback routing file
     

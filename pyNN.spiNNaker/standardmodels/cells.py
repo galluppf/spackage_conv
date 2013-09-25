@@ -171,7 +171,7 @@ class convolution(cells.IF_curr_exp):
     __name__ = "convolution" 
     cell_params = ['v', 'time_last_input_spike', 'time_last_output_spike', 'tau_m', 'v_thresh', 'v_reset', 'v_rest', 'tau_refrac', 'size_map_x', 'size_map_y']
     synapses  =   {'excitatory': 0, 'inhibitory': 1}
-    default_parameters = {'tau_refrac': 0, 'size_map_y': 0, 'tau_m': 16, 'time_last_input_spike': 0, 'v_thresh': -60.0, 'v_reset': -60.0, 'v': -60.0, 'size_map_x': 0, 'time_last_output_spike': 0, 'v_rest': -60.0}
+    default_parameters = {'tau_refrac': 0, 'size_map_y': 0, 'tau_m': 16, 'time_last_input_spike': 0, 'v_thresh': -60.0, 'v_reset': -60.0, 'v': 0, 'size_map_x': 0, 'time_last_output_spike': 0, 'v_rest': -60.0}
 
     def __init__(self): 
         self.__name__ = __name__ 
