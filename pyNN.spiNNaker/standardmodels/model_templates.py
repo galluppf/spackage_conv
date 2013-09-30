@@ -170,14 +170,12 @@ void configure_recording_space()
     
     record_spikes = (uint *) 0x72040000;
     for(uint i = 0; i < 1000; i++) record_spikes[i] = 0; //TODO improve 
-
-    // spike count
-
-    int *spike_count_dest = NULL;
-    spike_count_dest = (int *) spin1_malloc(num_populations);
-    spike_count =  (int *) spike_count_dest;
-    for(uint i = 0; i < num_populations; i++) spike_count[i] = 0; //TODO improve    
     
+}
+
+void handle_sdp_msg(sdp_msg_t * sdp_msg)
+{
+    return;
 }
 
 $decode_synaptic_word
